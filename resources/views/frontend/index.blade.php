@@ -110,7 +110,7 @@
 
         <div class="hero-badges" data-aos="fade-up" data-aos-delay="200">
           <div class="hero-badge-item">
-            <div class="hero-badge-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="hero-badge-icon"><i class="fa-solid fa-shield-heart"></i></div>
             <div>
               <span class="hero-badge-label">100% Secure</span>
               <span class="hero-badge-sub">Your investment is safe</span>
@@ -147,7 +147,7 @@
             </div>
           </div>
           <div class="hero-float-card card-right" data-aos="fade-left" data-aos-delay="500">
-            <div class="fc-icon text-success"><i class="fas fa-shield-check"></i></div>
+            <div class="fc-icon text-success"><i class="fa-solid fa-shield-heart"></i></div>
             <div>
               <span class="fc-label">Secured Investments</span>
               <span class="fc-value">100%</span>
@@ -181,7 +181,25 @@
             {{-- Meta row --}}
             <div class="d-flex align-items-center justify-content-between mb-3">
               <span class="badge-active"><i class="fa-solid fa-circle-dot fa-beat" style="font-size:0.6rem;"></i> Active</span>
-              <span class="posted-date">Posted: {{ $post->created_at->format('d M Y') }}</span>
+              <div class="d-flex align-items-center gap-2">
+                {{-- Clickable member count badge --}}
+                @auth
+                  <a href="{{ route('investments.index', ['investment_post_id' => $post->id]) }}"
+                     class="text-decoration-none"
+                     title="View investors for this opportunity">
+                    <span style="font-size:0.72rem;font-weight:700;background:#e8f5ee;color:#1a9e4f;border:1px solid #a7f3d0;border-radius:20px;padding:2px 10px;white-space:nowrap;">
+                      <i class="fas fa-users" style="font-size:0.65rem;"></i>
+                      {{ $post->member_count ?? 0 }} Member{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
+                    </span>
+                  </a>
+                @else
+                  <span style="font-size:0.72rem;font-weight:700;background:#e8f5ee;color:#1a9e4f;border:1px solid #a7f3d0;border-radius:20px;padding:2px 10px;white-space:nowrap;">
+                    <i class="fas fa-users" style="font-size:0.65rem;"></i>
+                    {{ $post->member_count ?? 0 }} Member{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
+                  </span>
+                @endauth
+                <span class="posted-date">{{ $post->created_at->format('d M Y') }}</span>
+              </div>
             </div>
 
             {{-- Image + Spec grid --}}
@@ -224,8 +242,15 @@
                     <span class="spec-val">Weekly</span>
                   </li>
                   <li>
-                    <span class="spec-label"><i class="fas fa-user-shield"></i> Investor Needed</span>
-                    <span class="spec-val">1 Person</span>
+                    <span class="spec-label"><i class="fas fa-user-shield"></i> Members Invested</span>
+                    @auth
+                      <a href="{{ route('investments.index', ['investment_post_id' => $post->id]) }}"
+                         class="spec-val text-decoration-none" style="color: #1a9e4f;font-weight:700;">
+                        {{ number_format($post->member_count ?? 0) }} Person{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
+                      </a>
+                    @else
+                      <span class="spec-val">{{ number_format($post->member_count ?? 0) }} Person{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}</span>
+                    @endauth
                   </li>
                 </ul>
               </div>
@@ -269,7 +294,7 @@
     <div class="row g-0">
       <div class="col-md-3 col-sm-6">
         <div class="feature-item">
-          <div class="feature-icon"><i class="fas fa-shield-check"></i></div>
+          <div class="feature-icon"><i class="fa-solid fa-shield-heart"></i></div>
           <div>
             <div class="feature-title">Safe &amp; Secure</div>
             <div class="feature-desc">Your investment is protected with full transparency.</div>

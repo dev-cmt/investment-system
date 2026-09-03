@@ -19,18 +19,20 @@
   <meta name="description"
     content="{{ $companyName }} - {{ $companyDescription }}" />
   <title>{{ $title ?? ($companyName . ' - Invest in Real Products, Earn Weekly Profit') }}</title>
+  <!-- Fonts -->
+  <link rel="stylesheet" href="{{ asset('css/fonts.css') }}" />
   <!-- Bootstrap 5 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
   <!-- Font Awesome 6 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/fontawesome.min.css') }}" />
   <!-- AOS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <link rel="stylesheet" href="{{ asset('css/aos.css') }}" />
   <!-- GLightbox -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/glightbox.min.css') }}" />
   <!-- Swiper -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/swiper-bundle.min.css') }}" />
   <!-- Toastr -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}" />
   <!-- Custom -->
   <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
   @stack('styles')
@@ -58,12 +60,12 @@
   @include('frontend.partials.footer')
 
   <!-- SCRIPTS -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="{{ asset('js/jquery.min.js') }}"></script>
+  <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ asset('js/aos.js') }}"></script>
+  <script src="{{ asset('js/glightbox.min.js') }}"></script>
+  <script src="{{ asset('js/swiper-bundle.min.js') }}"></script>
+  <script src="{{ asset('js/toastr.min.js') }}"></script>
   <script src="{{ asset('js/main.js') }}"></script>
   @stack('scripts')
 </body>

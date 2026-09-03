@@ -58,9 +58,14 @@ class InvestmentController extends Controller
 
             // Calculate shares and expected profit
             $unitCost      = (float) $post->unit_cost ?: 1;
-            $profitPerUnit = (float) $post->profit_per_unit;
-            $quantityShare = max(1, (int) round($amount / $unitCost));
-            $expectedProfit = $request->filled('custom_profit') ? (float) $request->custom_profit : (($amount / $unitCost) * $profitPerUnit);
+            // Use submitted per_piece_profit if provided, otherwise fall back to post's profit_per_unit
+            $profitPerUnit = $request->filled('per_piece_profit')
+                ? (float) $request->per_piece_profit
+                : (float) $post->profit_per_unit;
+            $quantityShare  = max(1, (int) round($amount / $unitCost));
+            $expectedProfit = $request->filled('custom_profit')
+                ? (float) $request->custom_profit
+                : (($amount / $unitCost) * $profitPerUnit);
 
             // Create investment bid with 'pending' status — admin must approve
             Investment::create([
@@ -68,6 +73,7 @@ class InvestmentController extends Controller
                 'investment_post_id'       => $post->id,
                 'amount'                   => $amount,
                 'calculated_quantity_share'=> $quantityShare,
+                'per_piece_profit'         => $profitPerUnit,
                 'expected_profit'          => $expectedProfit,
                 'status'                   => 'pending',
             ]);

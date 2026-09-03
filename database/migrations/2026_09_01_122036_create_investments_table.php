@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('investment_post_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 15, 2);
             $table->integer('calculated_quantity_share'); // Investor unit share
+            $table->decimal('per_piece_profit', 15, 2);
             $table->decimal('expected_profit', 15, 2);
             $table->enum('status', ['pending','active','sold','completed','cancelled','refunded'])->default('active');
             $table->timestamps();

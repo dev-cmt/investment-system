@@ -176,6 +176,22 @@
                                     <span class="text-muted">Investor</span>
                                     <strong class="text-primary">Multiple Investors</strong>
                                 </li>
+                                <li class="d-flex justify-content-between">
+                                    <span class="text-muted">Total Members</span>
+                                    @auth
+                                        <a href="{{ route('investments.index', ['investment_post_id' => $post->id]) }}"
+                                           class="fw-bold text-decoration-none" style="color:#1a9e4f;"
+                                           title="View all investors">
+                                            <i class="fas fa-users me-1" style="font-size:0.75rem;"></i>
+                                            {{ $post->member_count ?? $post->investments->whereIn('status', ['pending','active','sold','completed'])->count() }} Member{{ (($post->member_count ?? $post->investments->whereIn('status', ['pending','active','sold','completed'])->count()) != 1) ? 's' : '' }}
+                                        </a>
+                                    @else
+                                        <strong class="text-dark">
+                                            <i class="fas fa-users me-1" style="font-size:0.75rem;"></i>
+                                            {{ $post->member_count ?? $post->investments->whereIn('status', ['pending','active','sold','completed'])->count() }} Member{{ (($post->member_count ?? $post->investments->whereIn('status', ['pending','active','sold','completed'])->count()) != 1) ? 's' : '' }}
+                                        </strong>
+                                    @endauth
+                                </li>
                             </ul>
                         </div>
 
@@ -329,7 +345,7 @@
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold text-dark small">Profit per Piece (&#2547;)</label>
-                                        <input type="number" id="bidProfitPerUnit" class="form-control"
+                                        <input type="number" name="per_piece_profit" id="bidProfitPerUnit" class="form-control"
                                             value="{{ number_format($post->profit_per_unit, 2, '.', '') }}" step="0.01" min="0">
                                     </div>
                                     <div class="col-md-6">

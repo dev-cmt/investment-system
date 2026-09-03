@@ -101,104 +101,6 @@ $(document).ready(function () {
   $(window).on('scroll', animateCounters);
   animateCounters();
 
-  /* -- MODAL: VIEW DETAILS -- */
-  var products = {
-    earbuds : {
-      title    : 'Wireless Earbuds',
-      image    : 'asset/images/earbuds.jpg',
-      qty      : '1,000 pcs',
-      cost     : '?500',
-      total    : '?5,00,000',
-      import   : '25 Days',
-      profit   : '?50',
-      payment  : 'Weekly',
-      investor : '1 Person',
-      funded   : 64,
-      invested : '?3,20,000',
-      remaining: '?1,80,000',
-      profitPer: 50
-    },
-    watch   : {
-      title    : 'Smart Watch Series 8',
-      image    : 'asset/images/smartwatch.jpg',
-      qty      : '500 pcs',
-      cost     : '?1,200',
-      total    : '?6,00,000',
-      import   : '28 Days',
-      profit   : '?120',
-      payment  : 'Weekly',
-      investor : '1 Person',
-      funded   : 45,
-      invested : '?2,70,000',
-      remaining: '?3,30,000',
-      profitPer: 120
-    },
-    blender : {
-      title    : 'Portable Blender',
-      image    : 'asset/images/blender.jpg',
-      qty      : '800 pcs',
-      cost     : '?650',
-      total    : '?5,20,000',
-      import   : '25 Days',
-      profit   : '?65',
-      payment  : 'Weekly',
-      investor : '1 Person',
-      funded   : 30,
-      invested : '?1,56,000',
-      remaining: '?3,64,000',
-      profitPer: 65
-    }
-  };
-
-  /* Open modal */
-  $(document).on('click', '.btn-invest-action', function () {
-    var key  = $(this).data('product');
-    var p    = products[key];
-    if (!p) return;
-
-    $('#modalProductImg').attr('src', p.image).attr('alt', p.title);
-    $('#modalProductTitle').text(p.title);
-    $('#modalQty').text(p.qty);
-    $('#modalCost').text(p.cost);
-    $('#modalTotal').text(p.total);
-    $('#modalImport').text(p.import);
-    $('#modalProfit').text(p.profit);
-    $('#modalPayment').text(p.payment);
-    $('#modalFunded').text(p.funded + '% Funded');
-    $('#modalProgressBar').css('width', p.funded + '%').attr('aria-valuenow', p.funded);
-    $('#modalInvested').text(p.invested);
-    $('#modalRemaining').text(p.remaining);
-    $('#investAmountInput').val('').trigger('input');
-    $('#investAmountInput').data('profitper', p.profitPer);
-
-    var modal = new bootstrap.Modal(document.getElementById('investModal'));
-    modal.show();
-  });
-
-  /* Profit preview on input */
-  $(document).on('input', '#investAmountInput', function () {
-    var val  = parseInt($(this).val()) || 0;
-    var ppp  = parseInt($(this).data('profitper')) || 0;
-    var qty  = val > 0 ? Math.floor(val / ppp) : 0;
-    var earn = qty * ppp;
-    $('#profitPreviewText').text('?' + earn.toLocaleString() + ' estimated weekly profit');
-  });
-
-  /* Confirm invest */
-  $(document).on('click', '#confirmInvestBtn', function () {
-    var val = parseInt($('#investAmountInput').val()) || 0;
-    if (val < 100) {
-      if (typeof toastr !== 'undefined') {
-        toastr.warning('Minimum investment is ?100!', 'Heads up');
-      }
-      return;
-    }
-    bootstrap.Modal.getInstance(document.getElementById('investModal')).hide();
-    if (typeof toastr !== 'undefined') {
-      toastr.success('Investment of ?' + val.toLocaleString() + ' submitted successfully!', 'Investment Placed');
-    }
-  });
-
   /* -- TOASTR CONFIG -- */
   if (typeof toastr !== 'undefined') {
     toastr.options = {
@@ -214,19 +116,10 @@ $(document).ready(function () {
     };
   }
 
-  /* -- WELCOME TOAST -- */
-  setTimeout(function () {
-    if (typeof toastr !== 'undefined') {
-      toastr.info('New investment opportunities are live today!', 'InvestHub');
-    }
-  }, 1500);
-
   /* -- ACTIVE NAV LINK -- */
   $('.navbar-nav .nav-link').on('click', function () {
     $('.navbar-nav .nav-link').removeClass('active');
     $(this).addClass('active');
   });
-
-
 
 });

@@ -45,6 +45,11 @@ class InvestmentAdminController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter by specific investment post (e.g. from member count badge click)
+        if ($request->filled('investment_post_id')) {
+            $query->where('investment_post_id', $request->investment_post_id);
+        }
+
         $investments = $query->paginate(10)->withQueryString();
         $users       = $isAdmin ? User::orderBy('name')->get() : collect([$user]);
         $posts       = InvestmentPost::latest()->get();
@@ -87,6 +92,7 @@ class InvestmentAdminController extends Controller
                 'investment_post_id'        => $validated['investment_post_id'],
                 'amount'                    => $validated['amount'],
                 'calculated_quantity_share' => $quantityShare,
+                'per_piece_profit'         => $profitPerUnit,
                 'expected_profit'           => $expectedProfit,
                 'status'                    => $validated['status'],
             ]);
@@ -178,7 +184,6 @@ class InvestmentAdminController extends Controller
             if ($post) {
                 $post->increment('current_invested_amount', $investment->amount);
             }
-            $this->createPaymentForInvestment($investment, $post);
         });
 
         return redirect()->route('investments.index')->with('success', 'Investment bid approved successfully.');

@@ -22,13 +22,13 @@
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
             <div class="card-body py-3">
                 <form method="GET" action="{{ route('investments.index') }}" class="row g-2">
-                    <div class="col-md-5 col-sm-6">
+                    <div class="col-md-4 col-sm-6">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                             <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Search investor or product..." value="{{ request('search') }}">
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-6">
+                    <div class="col-md-3 col-sm-6">
                         <select name="status" class="form-select form-select-sm">
                             <option value="">All Statuses</option>
                             <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
@@ -38,7 +38,17 @@
                             <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : '' }}>Refunded</option>
                         </select>
                     </div>
-                    <div class="col-md-3 col-12">
+                    <div class="col-md-3 col-sm-6">
+                        <select name="investment_post_id" class="form-select form-select-sm">
+                            <option value="">All Product Posts</option>
+                            @foreach($posts as $filterPost)
+                                <option value="{{ $filterPost->id }}" {{ request('investment_post_id') == $filterPost->id ? 'selected' : '' }}>
+                                    {{ $filterPost->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-12">
                         <button type="submit" class="btn btn-secondary btn-sm w-100 fw-semibold"><i class="fas fa-filter me-1"></i> Filter</button>
                     </div>
                 </form>
@@ -108,6 +118,28 @@
                                             <i class="fas fa-times me-1"></i> Reject
                                         </button>
                                     </form>
+                                @endif
+                                {{-- Pay Now button for active investments without a payment --}}
+                                @if(in_array($investment->status, ['active', 'approved']))
+                                    @php $latestPay = $investment->payments->sortByDesc('created_at')->first(); @endphp
+                                    @if(!$latestPay || $latestPay->status === 'rejected')
+                                        <button type="button" class="btn btn-sm btn-success w-100 rounded-3 fw-semibold inv-pay-btn"
+                                            data-bs-toggle="modal" data-bs-target="#investPaymentModal"
+                                            data-investment-id="{{ $investment->id }}"
+                                            data-post-title="{{ $investment->post->title ?? 'Opportunity' }}"
+                                            data-amount="{{ $investment->amount }}"
+                                            data-investor="{{ $investment->user->name ?? '' }}">
+                                            <i class="fas fa-credit-card me-1"></i> Pay Now
+                                        </button>
+                                    @elseif($latestPay->status === 'pending')
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-2 fw-semibold w-100 text-center">
+                                            <i class="fas fa-clock me-1"></i> Payment Pending
+                                        </span>
+                                    @else
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-2 fw-semibold w-100 text-center">
+                                            <i class="fas fa-check-circle me-1"></i> Paid
+                                        </span>
+                                    @endif
                                 @endif
                                 @if(in_array($investment->status, ['active', 'completed', 'sold']))
                                     <button type="button" class="btn btn-sm btn-secondary opacity-50 w-100 rounded-3 fw-semibold" disabled title="Approved investment cannot be edited">
@@ -216,6 +248,29 @@
                                                     <i class="fas fa-times me-1"></i> Reject
                                                 </button>
                                             </form>
+                                        @endif
+                                        {{-- Pay Now button for active investments --}}
+                                        @if(in_array($investment->status, ['active', 'approved']))
+                                            @php $latestPay = $investment->payments->sortByDesc('created_at')->first(); @endphp
+                                            @if(!$latestPay || $latestPay->status === 'rejected')
+                                                <button type="button" class="btn btn-sm btn-success rounded-2 me-1 inv-pay-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#investPaymentModal"
+                                                    data-investment-id="{{ $investment->id }}"
+                                                    data-post-title="{{ $investment->post->title ?? 'Opportunity' }}"
+                                                    data-amount="{{ $investment->amount }}"
+                                                    data-investor="{{ $investment->user->name ?? '' }}"
+                                                    title="Submit Payment">
+                                                    <i class="fas fa-credit-card me-1"></i> Pay Now
+                                                </button>
+                                            @elseif($latestPay->status === 'pending')
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-2 fw-semibold me-1" title="Awaiting payment approval">
+                                                    <i class="fas fa-clock me-1"></i> Pending
+                                                </span>
+                                            @else
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-2 fw-semibold me-1" title="Payment approved">
+                                                    <i class="fas fa-check-circle me-1"></i> Paid
+                                                </span>
+                                            @endif
                                         @endif
                                         @if(in_array($investment->status, ['active', 'completed', 'sold']))
                                             <button type="button" class="btn btn-sm btn-secondary opacity-50 rounded-2 me-1" disabled title="Approved investments cannot be edited">
@@ -371,6 +426,7 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Edit investment modal
             var editButtons = document.querySelectorAll('.edit-investment-btn');
             editButtons.forEach(function(btn) {
                 btn.addEventListener('click', function() {
@@ -384,7 +440,71 @@
                     document.getElementById('edit_status').value = this.getAttribute('data-status') || 'active';
                 });
             });
+
+            // Pay Now modal
+            var payButtons = document.querySelectorAll('.inv-pay-btn');
+            payButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.getElementById('invPayInvestmentId').value = this.getAttribute('data-investment-id');
+                    document.getElementById('invPayAmount').value = parseFloat(this.getAttribute('data-amount')).toFixed(2);
+                    var title = this.getAttribute('data-post-title');
+                    var investor = this.getAttribute('data-investor');
+                    document.getElementById('invPayInfo').textContent =
+                        'Investment: ' + title + (investor ? '  |  Investor: ' + investor : '') +
+                        '  |  Amount: ৳' + parseFloat(this.getAttribute('data-amount')).toLocaleString('en-BD', {minimumFractionDigits: 2});
+                });
+            });
         });
     </script>
     @endpush
+
+    {{-- PAY NOW PAYMENT MODAL --}}
+    <div class="modal fade" id="investPaymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-success text-white py-3">
+                    <h5 class="modal-title fw-bold fs-6"><i class="fas fa-credit-card me-2"></i>Submit Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('investments.pay') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="investment_id" id="invPayInvestmentId">
+                    <div class="modal-body p-4">
+                        <div class="alert alert-success border border-success-subtle rounded-3 mb-3 py-2 px-3 small" id="invPaySummary">
+                            <i class="fas fa-info-circle me-1 text-success"></i>
+                            <span id="invPayInfo"></span>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Paid Amount (&#2547;) <span class="text-danger">*</span></label>
+                                <input type="number" name="paid_amount" id="invPayAmount" class="form-control form-control-sm" step="0.01" min="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Payment Date <span class="text-danger">*</span></label>
+                                <input type="date" name="payment_date" class="form-control form-control-sm" value="{{ date('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small">Transaction ID</label>
+                                <input type="text" name="transaction_id" class="form-control form-control-sm" placeholder="e.g. TXN123456789">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small">Payment Slip / Receipt <span class="text-danger">*</span></label>
+                                <input type="file" name="slip" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+                                <small class="text-muted" style="font-size:0.72rem;">Upload receipt (JPG, PNG, WEBP, or PDF — max 5MB).</small>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small">Note (Optional)</label>
+                                <textarea name="message" class="form-control form-control-sm" rows="2" placeholder="Any notes about this payment..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light py-2 px-4 border-top">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success btn-sm px-4 fw-semibold"><i class="fas fa-paper-plane me-1"></i>Submit Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </x-backend-layout>

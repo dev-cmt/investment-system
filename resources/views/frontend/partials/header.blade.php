@@ -46,7 +46,7 @@
       <div class="d-flex align-items-center gap-2">
         @if (Route::has('login'))
           @auth
-            <a href="{{ route('dashboard') }}" class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5">
+            <a href="{{ route('dashboard') }}" class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-2">
               <i class="fas fa-gauge-high"></i> Dashboard
             </a>
             <form method="POST" action="{{ route('logout') }}" class="d-inline">

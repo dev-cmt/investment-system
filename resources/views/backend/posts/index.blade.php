@@ -1,6 +1,6 @@
 <x-backend-layout>
     @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <link href="{{ asset('css/summernote-lite.min.css') }}" rel="stylesheet">
     <style>
         .note-editor.note-frame {
             border-radius: 8px !important;
@@ -449,7 +449,7 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script src="{{ asset('js/summernote-lite.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var baseUrl = '{{ asset("") }}';

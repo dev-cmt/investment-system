@@ -15,12 +15,14 @@ class Investment extends Model
         'investment_post_id',
         'amount',
         'calculated_quantity_share',
+        'per_piece_profit',
         'expected_profit',
         'status',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'per_piece_profit' => 'decimal:2',
         'expected_profit' => 'decimal:2',
     ];
 
