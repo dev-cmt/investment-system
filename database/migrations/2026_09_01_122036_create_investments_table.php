@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('investment_post_id')->constrained()->onDelete('cascade');
-            $table->decimal('amount', 15, 2);
+            $table->decimal('investment_amount', 15, 2);
+            $table->decimal('paid_amount', 15, 2)->default(0);
+            $table->decimal('due_amount', 15, 2)->default(0);
             $table->integer('calculated_quantity_share'); // Investor unit share
             $table->decimal('per_piece_profit', 15, 2);
             $table->decimal('expected_profit', 15, 2);

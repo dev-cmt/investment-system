@@ -1,83 +1,6 @@
 <x-backend-layout>
 
-<style>
-/* ── Dashboard layout ───────────────────────── */
-.db-page {
-    padding: 24px 24px 48px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
 
-/* Page Header */
-.db-page-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
-}
-.db-page-header h1 {
-    font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0;
-}
-.db-page-header p { font-size: 0.8rem; color: #64748b; margin: 3px 0 0; }
-
-/* ── PANEL (white card) ─────────────────────── */
-.db-panel {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-}
-.db-panel-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid #f1f5f9;
-}
-.db-panel-head-title { font-size: 0.92rem; font-weight: 700; color: #0f172a; }
-
-/* Mini stat card */
-.mini-stat {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 20px;
-    display: flex; align-items: center; gap: 16px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-}
-.mini-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
-.mini-stat-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.15rem; flex-shrink: 0;
-}
-.mini-stat-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px; }
-.mini-stat-value { font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1; }
-.mini-stat-sub { font-size: 0.73rem; color: #64748b; margin-top: 5px; }
-
-/* Status Pill */
-.inv-status-pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 20px;
-    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-    white-space: nowrap;
-}
-.pill-green { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-.pill-blue  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-.pill-amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-.pill-purple{ background: #faf5ff; color: #6d28d9; border: 1px solid #e9d5ff; }
-.pill-gray  { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-
-.inv-empty {
-    padding: 36px;
-    text-align: center;
-    color: #94a3b8;
-    font-size: 0.85rem;
-}
-.inv-empty i { font-size: 2rem; display: block; margin-bottom: 10px; color: #cbd5e1; }
-
-@media (max-width: 768px) {
-    .db-page { padding: 16px 12px 40px; }
-}
-</style>
 
 <div class="db-page">
 
@@ -186,7 +109,7 @@
                                     <tr>
                                         <td class="ps-3 fw-semibold text-dark">{{ $rinv->user->name ?? 'User' }}</td>
                                         <td class="text-truncate" style="max-width: 140px;">{{ $rinv->post->title ?? 'Post' }}</td>
-                                        <td class="fw-bold text-success">&#2547;{{ number_format($rinv->amount) }}</td>
+                                        <td class="fw-bold text-success">&#2547;{{ number_format($rinv->investment_amount) }}</td>
                                         <td><span class="inv-status-pill pill-green">{{ $rinv->status }}</span></td>
                                     </tr>
                                 @empty
@@ -315,7 +238,7 @@
                                             <div class="fw-bold text-dark mb-0">{{ $inv->post->title ?? 'Investment Opportunity' }}</div>
                                             <small class="text-muted">{{ $inv->created_at->format('d M Y') }}</small>
                                         </td>
-                                        <td class="fw-bold text-dark">&#2547;{{ number_format($inv->amount, 2) }}</td>
+                                        <td class="fw-bold text-dark">&#2547;{{ number_format($inv->investment_amount, 2) }}</td>
                                         <td class="fw-bold text-success">&#2547;{{ number_format($inv->expected_profit, 2) }}</td>
                                         <td><span class="badge bg-light text-dark border">{{ number_format($inv->calculated_quantity_share) }} pcs</span></td>
                                         <td>
@@ -329,24 +252,32 @@
                                             <span class="inv-status-pill {{ $statusClass }}">{{ $inv->status }}</span>
                                         </td>
                                         <td>
-                                            @if($inv->status === 'active' || $inv->status === 'approved')
-                                                @php $latestPay = $inv->latestPayment; @endphp
-                                                @if($latestPay && $latestPay->status === 'approved')
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-2 fw-semibold">
-                                                        <i class="fas fa-check-circle me-1"></i> Paid & Approved
+                                            @php
+                                                $paidAmount = (float) $inv->payments->where('status', 'approved')->sum('paid_amount');
+                                                $totalAmount = (float) ($inv->investment_amount ?? 0);
+                                                $dueAmount = max(0, $totalAmount - $paidAmount);
+                                                $hasPendingSlip = $inv->payments->where('status', 'pending')->isNotEmpty();
+                                            @endphp
+
+                                            @if(in_array($inv->status, ['active', 'approved', 'sold', 'completed']))
+                                                @if($hasPendingSlip)
+                                                    <span class="badge bg-info-subtle text-info border border-info-subtle px-2.5 py-1.5 rounded-2 fw-semibold extra-small" title="A payment slip is awaiting admin verification">
+                                                        <i class="fas fa-clock me-1"></i> Payment Verifying
                                                     </span>
-                                                @elseif($latestPay && $latestPay->status === 'pending')
-                                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-2 fw-semibold">
-                                                        <i class="fas fa-clock me-1"></i> Slip Submitted (Pending)
-                                                    </span>
-                                                @else
+                                                @elseif($dueAmount > 0)
                                                     <button type="button" class="btn btn-sm btn-success py-1 px-2.5 rounded-3 fw-bold user-pay-btn"
                                                         data-bs-toggle="modal" data-bs-target="#userPaymentModal"
                                                         data-investment-id="{{ $inv->id }}"
                                                         data-post-title="{{ $inv->post->title ?? 'Opportunity' }}"
-                                                        data-amount="{{ $inv->amount }}">
-                                                        <i class="fas fa-credit-card me-1"></i> Pay Now
+                                                        data-total-amount="{{ $totalAmount }}"
+                                                        data-paid-amount="{{ $paidAmount }}"
+                                                        data-due-amount="{{ $dueAmount }}">
+                                                        <i class="fas fa-credit-card me-1"></i> {{ $paidAmount > 0 ? 'Pay Due (৳' . number_format($dueAmount) . ')' : 'Pay Now' }}
                                                     </button>
+                                                @else
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-2 fw-semibold">
+                                                        <i class="fas fa-check-circle me-1"></i> Fully Paid
+                                                    </span>
                                                 @endif
                                             @elseif($inv->status === 'pending')
                                                 <span class="text-muted extra-small"><i class="fas fa-hourglass-half me-1"></i> Pending Approval</span>
@@ -420,14 +351,25 @@
                 @csrf
                 <input type="hidden" name="investment_id" id="payInvestmentId">
                 <div class="modal-body p-4">
-                    <div class="alert alert-success-subtle border border-success-subtle rounded-3 mb-3 py-2 px-3 small" id="payInvestmentSummary">
-                        <i class="fas fa-info-circle me-1 text-success"></i>
-                        <span id="payInvestmentInfo"></span>
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="fw-bold text-dark small mb-1" id="payInvestmentTitle">Investment Opportunity</div>
+                        <div class="d-flex justify-content-between extra-small text-muted mb-1">
+                            <span>Total Amount: <strong class="text-dark" id="payInvestmentTotal">&#2547;0</strong></span>
+                            <span>Paid: <strong class="text-success" id="payInvestmentPaid">&#2547;0</strong></span>
+                        </div>
+                        <div class="d-flex justify-content-between extra-small border-top pt-1 mt-1">
+                            <span class="text-danger fw-bold">Remaining Due:</span>
+                            <strong class="text-danger fs-6" id="payInvestmentDue">&#2547;0</strong>
+                        </div>
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Paid Amount (&#2547;) <span class="text-danger">*</span></label>
-                            <input type="number" name="paid_amount" id="payAmount" class="form-control form-control-sm" step="0.01" min="1" required>
+                            <label class="form-label fw-semibold small">Payment Amount (&#2547;) <span class="text-danger">*</span></label>
+                            <input type="number" name="paid_amount" id="payAmount" class="form-control form-control-sm" step="any" min="1" required placeholder="Enter amount">
+                            <div id="dashboardPayMaxWarning" class="text-danger extra-small mt-1 d-none fw-semibold">
+                                <i class="fas fa-exclamation-circle me-1"></i> Cannot exceed due amount of ৳<span id="dashboardPayMaxDueText">0</span>.
+                            </div>
+                            <small class="text-muted extra-small d-block mt-1">Full or partial amount accepted (max: due amount).</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Payment Date <span class="text-danger">*</span></label>
@@ -459,15 +401,50 @@
 
 @push('scripts')
 <script>
+    var currentDashMaxDue = 0;
+    var dashPayAmount = document.getElementById('payAmount');
+    var dashPayWarning = document.getElementById('dashboardPayMaxWarning');
+    var dashPayMaxDueText = document.getElementById('dashboardPayMaxDueText');
+
+    if (dashPayAmount) {
+        dashPayAmount.addEventListener('input', function() {
+            var val = parseFloat(this.value);
+            if (isNaN(val) || val <= 0) {
+                this.setCustomValidity('Please enter a valid amount (minimum ৳1)');
+                if (dashPayWarning) dashPayWarning.classList.add('d-none');
+            } else if (currentDashMaxDue > 0 && val > currentDashMaxDue) {
+                if (dashPayWarning) dashPayWarning.classList.remove('d-none');
+                this.setCustomValidity('Payment amount cannot exceed ৳' + Math.round(currentDashMaxDue));
+            } else {
+                if (dashPayWarning) dashPayWarning.classList.add('d-none');
+                this.setCustomValidity('');
+            }
+        });
+    }
+
     document.querySelectorAll('.user-pay-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var invId    = this.getAttribute('data-investment-id');
-            var title    = this.getAttribute('data-post-title');
-            var amount   = this.getAttribute('data-amount');
+            var title    = this.getAttribute('data-post-title') || 'Investment Opportunity';
+            var total    = parseFloat(this.getAttribute('data-total-amount')) || 0;
+            var paid     = parseFloat(this.getAttribute('data-paid-amount')) || 0;
+            var due      = parseFloat(this.getAttribute('data-due-amount')) || Math.max(0, total - paid);
+
+            currentDashMaxDue = due;
             document.getElementById('payInvestmentId').value = invId;
-            document.getElementById('payAmount').value       = parseFloat(amount).toFixed(2);
-            document.getElementById('payInvestmentInfo').textContent =
-                'Investment: ' + title + '  |  Amount: ৳' + parseFloat(amount).toLocaleString('en-BD', {minimumFractionDigits: 2});
+            var payInput = document.getElementById('payAmount');
+            if (payInput) {
+                payInput.value = due > 0 ? Math.round(due) : Math.round(total);
+                payInput.max   = due > 0 ? Math.round(due) : Math.round(total);
+                payInput.setCustomValidity('');
+            }
+            if (dashPayMaxDueText) dashPayMaxDueText.textContent = Math.round(due).toLocaleString('en-BD');
+            if (dashPayWarning) dashPayWarning.classList.add('d-none');
+
+            document.getElementById('payInvestmentTitle').textContent = title;
+            document.getElementById('payInvestmentTotal').textContent = '৳' + Math.round(total).toLocaleString('en-BD');
+            document.getElementById('payInvestmentPaid').textContent  = '৳' + Math.round(paid).toLocaleString('en-BD');
+            document.getElementById('payInvestmentDue').textContent   = '৳' + Math.round(due).toLocaleString('en-BD');
         });
     });
 </script>

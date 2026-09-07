@@ -108,8 +108,14 @@
                                     style="max-height: 320px; width: 100%; object-fit: contain;" />
                             </a>
                         </div>
-                        <div class="position-absolute bottom-0 end-0 mb-3 me-3 px-2.5 py-1 bg-dark bg-opacity-75 text-white rounded-pill extra-small fw-semibold shadow-sm" id="imageCounter">
-                            Image 1/{{ $totalGallery }}
+
+                        <!-- Circular Active Counter Badge -->
+                        <div class="position-absolute bottom-0 end-0 mb-3 me-3 d-flex align-items-center justify-content-center bg-dark bg-opacity-75 text-white rounded-circle shadow-lg border border-white border-opacity-25"
+                             id="imageCounter"
+                             style="width: 46px; height: 46px; backdrop-filter: blur(4px);">
+                            <span class="extra-small fw-bold lh-1 text-center" id="counterText">
+                                1/{{ $totalGallery }}
+                            </span>
                         </div>
                     </div>
 
@@ -229,7 +235,7 @@
             <div class="row g-3 mt-4">
                 <div class="col-md-3">
                     <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 p-2.5 bg-primary-subtle text-primary"><i
+                        <div class="rounded-3 gap-2 bg-primary-subtle text-primary"><i
                                 class="fas fa-calendar-alt fa-lg"></i></div>
                         <div>
                             <small class="text-muted d-block">Import Time</small>
@@ -239,7 +245,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 p-2.5 bg-success-subtle text-success"><i class="fas fa-wallet fa-lg"></i>
+                        <div class="rounded-3 gap-2 bg-success-subtle text-success"><i class="fas fa-wallet fa-lg"></i>
                         </div>
                         <div>
                             <small class="text-muted d-block">Profit Payment</small>
@@ -249,7 +255,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 p-2.5 bg-info-subtle text-info"><i class="fas fa-arrows-rotate fa-lg"></i>
+                        <div class="rounded-3 gap-2 bg-info-subtle text-info"><i class="fas fa-arrows-rotate fa-lg"></i>
                         </div>
                         <div>
                             <small class="text-muted d-block">Return Type</small>
@@ -259,7 +265,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 p-2.5 bg-warning-subtle text-warning"><i class="fas fa-user-shield fa-lg"></i>
+                        <div class="rounded-3 gap-2 bg-warning-subtle text-warning"><i class="fas fa-user-shield fa-lg"></i>
                         </div>
                         <div>
                             <small class="text-muted d-block">Investment Type</small>
@@ -315,11 +321,10 @@
                                             <div class="opt-icon"><i class="fas fa-sliders-h"></i></div>
                                             <div>
                                                 <div class="fw-bold text-dark">Custom Investment</div>
-                                                <small class="text-muted">Choose your own amount based on your comfort
-                                                    level.</small>
+                                                <small class="text-muted">Choose your own amount based on your comfort level.</small>
                                             </div>
                                         </div>
-                                        <div class="opt-amount">Custom</div>
+                                        <div class="opt-amount">Min &#2547;{{ number_format($post->min_investment_amount ?? 100) }}</div>
                                     </div>
                                     <input class="form-check-input d-none" type="radio" name="investOption"
                                         id="optCustom" value="custom">
@@ -333,13 +338,24 @@
                                     value="{{ $post->target_amount }}">
 
                                 <div class="mb-3 d-none" id="customAmountWrap">
-                                    <label class="form-label fw-semibold text-dark small">Your investment amount
-                                        (&#2547;)</label>
-                                    <input type="number" id="customAmountInput" class="form-control"
-                                        min="{{ $post->min_investment_amount ?? 100 }}" step="100"
-                                        value="{{ $post->min_investment_amount ?? 100 }}" placeholder="Enter amount">
-                                    <small class="text-muted">Minimum investment:
-                                        &#2547;{{ number_format($post->min_investment_amount ?? 100) }}</small>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-semibold text-dark small mb-0">Your investment amount (&#2547;)</label>
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none extra-small text-primary fw-semibold" id="btnResetMinAmount" title="Reset to minimum investment">
+                                            <i class="fas fa-rotate-left me-1"></i> Reset Min
+                                        </button>
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light fw-bold">&#2547;</span>
+                                        <input type="number" id="customAmountInput" class="form-control"
+                                            min="{{ $post->min_investment_amount ?? 100 }}" step="100"
+                                            value="{{ $post->min_investment_amount ?? 100 }}" placeholder="Enter amount">
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap gap-1">
+                                        <small class="text-muted" id="minAmountLabel">
+                                            Minimum investment: <strong role="button" class="text-primary text-decoration-underline" id="minAmountClickable" title="Click to apply minimum investment">&#2547;{{ number_format($post->min_investment_amount ?? 100) }}</strong>
+                                        </small>
+                                        <small id="customAmountValidationMsg" class="text-danger extra-small d-none"></small>
+                                    </div>
                                 </div>
 
                                 <div class="row g-3 mb-3">
@@ -437,13 +453,16 @@
             document.getElementById('mainProductImage').src = src;
             var anchor = document.getElementById('mainProductAnchor');
             if (anchor) anchor.href = src;
+
             $('.thumb-item').removeClass('active');
             $(element).addClass('active');
-            var counter = document.getElementById('imageCounter');
-            if (counter && index && total) {
-                counter.textContent = 'Image ' + index + '/' + total;
-            }
+
+            // Update circular active counter badge dynamically
+            $('#counterText').text(index + '/' + total);
         }
+
+        const minAmount = {{ (float) ($post->min_investment_amount ?? 100) }};
+        const fullAmount = {{ (float) ($post->target_amount ?? 0) }};
 
         function calcExpectedProfit(amount) {
             if (unitCost <= 0) return 0;
@@ -452,10 +471,26 @@
             return Math.round(profit * 100) / 100;
         }
 
-        function selectOpt(type) {
-            const fullAmount = {{ (float) ($post->target_amount ?? 0) }};
-            const minAmount = {{ (float) ($post->min_investment_amount ?? 100) }};
+        function updateCustomAmount(val) {
+            const num = Number(val) || 0;
+            $('#selectedInvestmentAmount').val(num);
+            $('#bidCustomProfit').val(calcExpectedProfit(num));
 
+            if (num > 0 && num < minAmount) {
+                $('#customAmountValidationMsg')
+                    .removeClass('d-none')
+                    .text('Min required: ৳' + minAmount.toLocaleString());
+            } else {
+                $('#customAmountValidationMsg').addClass('d-none');
+            }
+        }
+
+        function resetToMin() {
+            $('#customAmountInput').val(minAmount);
+            updateCustomAmount(minAmount);
+        }
+
+        function selectOpt(type) {
             if (type === 'full') {
                 $('#optFull').prop('checked', true);
                 $('#optCardFull').addClass('active-opt');
@@ -468,19 +503,24 @@
                 $('#optCardCustom').addClass('active-opt');
                 $('#optCardFull').removeClass('active-opt');
                 $('#customAmountWrap').removeClass('d-none');
-                const customValue = Math.max(minAmount, Number($('#customAmountInput').val()) || minAmount);
-                $('#customAmountInput').val(customValue);
-                $('#selectedInvestmentAmount').val(customValue);
-                $('#bidCustomProfit').val(calcExpectedProfit(customValue));
+
+                let val = Number($('#customAmountInput').val());
+                if (!val || val <= 0) {
+                    val = minAmount;
+                    $('#customAmountInput').val(val);
+                }
+                updateCustomAmount(val);
             }
         }
 
         $('#customAmountInput').on('input change keyup', function() {
-            const customValue = Number($(this).val()) || 0;
-            if (customValue > 0) {
-                $('#selectedInvestmentAmount').val(customValue);
-                $('#bidCustomProfit').val(calcExpectedProfit(customValue));
-            }
+            const customValue = $(this).val();
+            updateCustomAmount(customValue);
+        });
+
+        $('#btnResetMinAmount, #minAmountClickable').on('click', function(e) {
+            e.preventDefault();
+            resetToMin();
         });
 
         $('#bidProfitPerUnit').on('input change keyup', function() {

@@ -24,7 +24,7 @@ class AdminController extends Controller
             ->latest()
             ->get();
 
-        $totalInvested = $userInvestments->sum('amount');
+        $totalInvested = $userInvestments->sum('investment_amount');
         $totalExpectedProfit = $userInvestments->sum('expected_profit');
         $activeCount = $userInvestments->where('status', 'active')->count();
 
@@ -42,7 +42,7 @@ class AdminController extends Controller
 
         // System-wide Admin Data
         $systemStats = [
-            'total_invested' => Investment::sum('amount'),
+            'total_invested' => Investment::sum('investment_amount'),
             'total_investors' => User::role('investor')->count() ?: User::count(),
             'active_posts' => InvestmentPost::where('status', 'active')->count(),
             'pending_withdrawals' => Withdrawal::where('status', 'pending')->count(),

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\InvestmentAdminController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\InvestmentPostController;
 use App\Http\Controllers\PaymentController;
@@ -37,18 +36,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Public / Client Investment Action
-    Route::post('/investments/place', [InvestmentController::class, 'store'])->name('investments.store');
+    Route::post('/investments/place', [HomeController::class, 'investmentsStore'])->name('investments.store');
     Route::post('/investments/pay', [PaymentController::class, 'storeUserPayment'])->name('investments.pay');
 
     // Backend Admin Investment Manual Store
-    Route::post('/investments/admin-store', [InvestmentAdminController::class, 'store'])->name('investments.admin_store');
+    Route::post('/investments/admin-store', [InvestmentController::class, 'store'])->name('investments.admin_store');
 
     // Backend CRUD Routes
     Route::resource('posts', InvestmentPostController::class);
-    Route::resource('investments', InvestmentAdminController::class)->except(['store']);
-    Route::post('/investments/{investment}/approve', [InvestmentAdminController::class, 'approve'])->name('investments.approve');
-    Route::post('/investments/{investment}/reject', [InvestmentAdminController::class, 'reject'])->name('investments.reject');
-    Route::resource('payments', PaymentController::class);
+    Route::resource('investments', InvestmentController::class)->except(['store']);
+    Route::post('/investments/{investment}/approve', [InvestmentController::class, 'approve'])->name('investments.approve');
+    Route::post('/investments/{investment}/reject', [InvestmentController::class, 'reject'])->name('investments.reject');
+    Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
+    Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+    Route::resource('payments', PaymentController::class)->except(['edit', 'update']);
     Route::resource('withdrawals', WithdrawalController::class);
     Route::resource('users', UserController::class);
 

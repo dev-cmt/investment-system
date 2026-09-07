@@ -102,15 +102,5 @@ class UserRoleSeeder extends Seeder
             ]
         );
         $adminUser->syncRoles([$adminRole]);
-
-        // Create Default Investor User
-        $investorUser = User::firstOrCreate(
-            ['email' => 'investor@gmail.com'],
-            [
-                'name' => 'Demo Investor',
-                'password' => Hash::make('investor12345'),
-            ]
-        );
-        $investorUser->syncRoles([$investorRole]);
     }
 }

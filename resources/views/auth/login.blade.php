@@ -11,7 +11,7 @@
         @csrf
 
         <!-- Email Address -->
-        <div class="mb-2.5 mb-sm-3">
+        <div class="mb-2 mb-sm-3">
             <label for="email" class="form-label-custom">Email Address</label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-envelope"></i></span>
@@ -21,7 +21,7 @@
         </div>
 
         <!-- Password -->
-        <div class="mb-2.5 mb-sm-3">
+        <div class="mb-2 mb-sm-3">
             <label for="password" class="form-label-custom">Password</label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-lock"></i></span>
@@ -44,7 +44,7 @@
             @endif
         </div>
 
-        <button type="submit" class="btn btn-auth-submit mb-2.5">
+        <button type="submit" class="btn btn-auth-submit mb-2">
             <i class="fas fa-sign-in-alt me-1.5"></i> Log In
         </button>
 

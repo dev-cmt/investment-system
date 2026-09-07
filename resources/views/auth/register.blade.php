@@ -53,7 +53,7 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1 text-danger small" />
         </div>
 
-        <button type="submit" class="btn btn-auth-submit mb-2.5">
+        <button type="submit" class="btn btn-auth-submit mb-2">
             <i class="fas fa-user-plus me-1.5"></i> Register Account
         </button>
 
