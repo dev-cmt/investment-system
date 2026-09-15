@@ -377,9 +377,14 @@
                                                 Target: <span class="fw-semibold text-dark">&#2547;{{ number_format($investment->post->target_amount ?? 0) }}</span>
                                             </div>
                                             @if($investment->post && $investment->post->expected_import_days)
-                                                <span class="badge bg-light text-muted border inv-badge-sm">
-                                                    <i class="fas fa-truck-fast me-1 text-primary"></i>{{ $investment->post->expected_import_days }} Days Import
-                                                </span>
+                                                <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                                    <span class="badge bg-light text-muted border inv-badge-sm">
+                                                        <i class="fas fa-truck-fast me-1 text-primary"></i>{{ $investment->post->expected_import_days }} Days
+                                                    </span>
+                                                    <span class="badge {{ ($investment->post->type ?? 'Import') === 'Local' ? 'bg-warning-subtle text-dark border border-warning' : (($investment->post->type ?? 'Import') === 'Manufacture' ? 'bg-info-subtle text-dark border border-info' : 'bg-primary-subtle text-primary border border-primary-subtle') }} px-1.5 py-0.5" style="font-size:0.68rem;">
+                                                        <i class="fas {{ ($investment->post->type ?? 'Import') === 'Local' ? 'fa-location-dot' : (($investment->post->type ?? 'Import') === 'Manufacture' ? 'fa-industry' : 'fa-ship') }} me-1"></i>{{ $investment->post->type ?? 'Import' }}
+                                                    </span>
+                                                </div>
                                             @endif
                                         </div>
                                     </div>

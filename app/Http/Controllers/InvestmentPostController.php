@@ -57,6 +57,8 @@ class InvestmentPostController extends Controller
             'target_amount' => 'nullable|numeric|min:0.01',
             'min_investment_amount' => 'nullable|numeric|min:1',
             'status' => 'required|in:active,upcoming,imported,sold_out,completed',
+            'type' => 'required|in:Import,Local,Manufacture',
+            'msg_profit_payment' => 'nullable|string|max:255',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after_or_equal:starts_at',
         ]);
@@ -115,6 +117,8 @@ class InvestmentPostController extends Controller
             'target_amount' => 'nullable|numeric|min:0.01',
             'min_investment_amount' => 'nullable|numeric|min:1',
             'status' => 'required|in:active,upcoming,imported,sold_out,completed',
+            'type' => 'required|in:Import,Local,Manufacture',
+            'msg_profit_payment' => 'nullable|string|max:255',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after_or_equal:starts_at',
         ]);

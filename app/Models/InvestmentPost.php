@@ -23,6 +23,8 @@ class InvestmentPost extends Model
         'current_invested_amount',
         'min_investment_amount',
         'status',
+        'type',
+        'msg_profit_payment',
         'starts_at',
         'ends_at',
     ];
@@ -57,6 +59,15 @@ class InvestmentPost extends Model
     public function getRemainingAmountAttribute(): float
     {
         return max(0, $this->target_amount - $this->current_invested_amount);
+    }
+
+    public function getTimeLabelAttribute(): string
+    {
+        return match($this->type) {
+            'Local' => 'Local Time',
+            'Manufacture' => 'Manufacture Time',
+            default => 'Import Time',
+        };
     }
 
     public function getGalleryImageUrlsAttribute(): array

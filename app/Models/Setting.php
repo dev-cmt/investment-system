@@ -25,7 +25,25 @@ class Setting extends Model
         'description',
         'copyright_text',
         'social_links',
+        'hero_video_url',
     ];
+
+    /**
+     * Get YouTube embed URL for hero section video.
+     */
+    public function getHeroVideoEmbedUrlAttribute(): ?string
+    {
+        $url = trim($this->hero_video_url ?? '');
+        if (empty($url)) {
+            return null;
+        }
+
+        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $url, $matches)) {
+            return 'https://www.youtube.com/embed/' . $matches[1];
+        }
+
+        return $url;
+    }
 
     protected $casts = [
         'social_links' => 'array',

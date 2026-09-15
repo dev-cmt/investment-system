@@ -230,9 +230,15 @@
                     </p>
 
                     <div class="d-flex align-items-center gap-3 mb-4" data-aos="fade-up" data-aos-delay="150">
-                        <a href="#opportunities" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
-                            <i class="fas fa-rocket me-1.5"></i> Explore Opportunities
-                        </a>
+                        @auth
+                            <a href="#opportunities" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
+                                <i class="fas fa-rocket me-1.5"></i> Explore Opportunities
+                            </a>
+                        @else
+                            <a href="{{ route('register') }}" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
+                                <i class="fas fa-user-plus me-1.5"></i> Sign Up to Invest
+                            </a>
+                        @endauth
                         <a href="#howItWorks" class="btn btn-outline-success rounded-pill px-4 py-2.5 fw-bold">
                             <i class="fas fa-play-circle me-1.5"></i> How It Works
                         </a>
@@ -263,10 +269,22 @@
                     </div>
                 </div>
 
-                {{-- Right image & floating cards --}}
+                {{-- Right image & floating cards / Video --}}
                 <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="hero-image-wrapper">
-                        <img src="{{ asset('images/hero.jpg') }}" alt="Global import and investment" />
+                    <div class="hero-image-wrapper position-relative overflow-hidden rounded-4 shadow-lg" style="background:#0f172a;">
+                        @if(!empty($setting->hero_video_embed_url))
+                            <div class="ratio ratio-16x9 rounded-4 overflow-hidden border border-light border-opacity-10 shadow">
+                                <iframe src="{{ $setting->hero_video_embed_url }}"
+                                        title="How This Website Works"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen
+                                        style="border:0;"
+                                        loading="lazy">
+                                </iframe>
+                            </div>
+                        @else
+                            <img src="{{ asset('images/hero.jpg') }}" alt="Global import and investment" />
+                        @endif
                         <div class="hero-float-card card-left" data-aos="fade-right" data-aos-delay="400">
                             <div class="fc-icon"><i class="fas fa-arrow-trend-up"></i></div>
                             <div>
@@ -289,30 +307,35 @@
     </section>
 
     {{-- ─────────────── OPPORTUNITIES ─────────────── --}}
-    <section class="opportunities-section" id="opportunities">
-        <div class="container">
+    @auth
+        <section class="opportunities-section" id="opportunities">
+            <div class="container">
 
-            {{-- Header --}}
-            <div class="section-header" data-aos="fade-up">
-                <h2 class="section-title">Active Investment Opportunities</h2>
-                <a href="#howItWorks" class="how-it-works-link">
-                    <i class="fas fa-circle-info"></i> How It Works
-                </a>
-            </div>
+                {{-- Header --}}
+                <div class="section-header" data-aos="fade-up">
+                    <h2 class="section-title">Active Investment Opportunities</h2>
+                    <a href="#howItWorks" class="how-it-works-link">
+                        <i class="fas fa-circle-info"></i> How It Works
+                    </a>
+                </div>
 
-            {{-- Cards Grid --}}
-            <div class="row g-4">
-                @forelse($posts as $index => $post)
-                    <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
-                        <div class="opp-card w-100">
+                {{-- Cards Grid --}}
+                <div class="row g-4">
+                    @forelse($posts as $index => $post)
+                        <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
+                            <div class="opp-card w-100">
 
-                            {{-- Meta row --}}
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="badge-active"><i class="fa-solid fa-circle-dot fa-beat"
-                                        style="font-size:0.6rem;"></i> Active</span>
-                                <div class="d-flex align-items-center gap-2">
-                                    {{-- Clickable member count badge --}}
-                                    @auth
+                                {{-- Meta row --}}
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <span class="badge-active"><i class="fa-solid fa-circle-dot fa-beat"
+                                                style="font-size:0.6rem;"></i> Active</span>
+                                        <span class="badge {{ $post->type === 'Local' ? 'bg-warning-subtle text-dark border border-warning' : ($post->type === 'Manufacture' ? 'bg-info-subtle text-dark border border-info' : 'bg-success-subtle text-success border border-success-subtle') }} rounded-pill px-2.5 py-1 extra-small fw-bold">
+                                            <i class="fas {{ $post->type === 'Local' ? 'fa-location-dot' : ($post->type === 'Manufacture' ? 'fa-industry' : 'fa-ship') }} me-1"></i>{{ $post->type ?? 'Import' }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        {{-- Clickable member count badge --}}
                                         <a href="{{ route('investments.index', ['investment_post_id' => $post->id]) }}"
                                             class="text-decoration-none" title="View investors for this opportunity">
                                             <span
@@ -322,117 +345,117 @@
                                                 Member{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
                                             </span>
                                         </a>
-                                    @else
-                                        <span
-                                            style="font-size:0.72rem;font-weight:700;background:#e8f5ee;color:#1a9e4f;border:1px solid #a7f3d0;border-radius:20px;padding:2px 10px;white-space:nowrap;">
-                                            <i class="fas fa-users" style="font-size:0.65rem;"></i>
-                                            {{ $post->member_count ?? 0 }}
-                                            Member{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
-                                        </span>
-                                    @endauth
-                                    <span class="posted-date">{{ $post->created_at->format('d M Y') }}</span>
-                                </div>
-                            </div>
-
-                            {{-- Image + Spec grid --}}
-                            <div class="card-body-inner mb-3">
-                                {{-- Image --}}
-                                <div>
-                                    <div class="opp-img-wrap mb-2">
-                                        <a href="{{ asset($post->image ?? 'images/earbuds.jpg') }}" class="glightbox"
-                                            data-gallery="opportunities">
-                                            <img src="{{ asset($post->image ?? 'images/earbuds.jpg') }}"
-                                                alt="{{ $post->title }}" />
-                                        </a>
+                                        <span class="posted-date">{{ $post->created_at->format('d M Y') }}</span>
                                     </div>
                                 </div>
 
-                                {{-- Specs --}}
-                                <div>
-                                    <h3 class="product-title mb-2">{{ $post->title }}</h3>
-                                    <ul class="spec-list">
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-boxes-stacked"></i> Quantity</span>
-                                            <span class="spec-val">{{ number_format($post->total_quantity) }} pcs</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-tag"></i> Cost per Piece</span>
-                                            <span class="spec-val">&#2547;{{ number_format($post->unit_cost) }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-money-bill-wave"></i> Total
-                                                Investment</span>
-                                            <span class="spec-val">&#2547;{{ number_format($post->target_amount) }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-calendar-days"></i> Import
-                                                Time</span>
-                                            <span class="spec-val">{{ $post->expected_import_days }} Days</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-chart-line"></i> Profit per
-                                                Piece</span>
-                                            <span
-                                                class="spec-val green">&#2547;{{ number_format($post->profit_per_unit) }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-wallet"></i> Profit Payment</span>
-                                            <span class="spec-val">Weekly</span>
-                                        </li>
-                                        <li>
-                                            <span class="spec-label"><i class="fas fa-user-shield"></i> Members
-                                                Invested</span>
-                                            @auth
+                                {{-- Image + Spec grid --}}
+                                <div class="card-body-inner mb-3">
+                                    {{-- Image --}}
+                                    <div>
+                                        @php
+                                            $galleryUrls = $post->gallery_image_urls;
+                                        @endphp
+                                        <div class="opp-img-wrap mb-2 position-relative">
+                                            @foreach ($galleryUrls as $gIdx => $gUrl)
+                                                <a href="{{ $gUrl }}"
+                                                    class="glightbox {{ $gIdx > 0 ? 'd-none' : 'w-100 h-100 d-flex align-items-center justify-content-center' }}"
+                                                    data-gallery="opp-gallery-{{ $post->id }}">
+                                                    @if ($gIdx === 0)
+                                                        <img src="{{ $gUrl }}" alt="{{ $post->title }}" />
+                                                    @endif
+                                                </a>
+                                            @endforeach
+                                            @if (count($galleryUrls) > 1)
+                                                <span class="position-absolute bottom-0 end-0 mb-1 me-1 px-2 py-0.5 rounded-pill bg-dark bg-opacity-75 text-white extra-small fw-semibold pe-none"
+                                                    style="font-size: 0.65rem; backdrop-filter: blur(3px); z-index: 2;">
+                                                    <i class="fas fa-images me-1"></i>{{ count($galleryUrls) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Specs --}}
+                                    <div>
+                                        <h3 class="product-title mb-2">{{ $post->title }}</h3>
+                                        <ul class="spec-list">
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-boxes-stacked"></i> Quantity</span>
+                                                <span class="spec-val">{{ number_format($post->total_quantity) }} pcs</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-tag"></i> Cost per Piece</span>
+                                                <span class="spec-val">&#2547;{{ number_format($post->unit_cost) }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-money-bill-wave"></i> Total
+                                                    Investment</span>
+                                                <span class="spec-val">&#2547;{{ number_format($post->target_amount) }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-calendar-days"></i> {{ $post->time_label }}</span>
+                                                <span class="spec-val">{{ $post->expected_import_days }} Days</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-chart-line"></i> Profit per
+                                                    Piece</span>
+                                                <span
+                                                    class="spec-val green">&#2547;{{ number_format($post->profit_per_unit) }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-wallet"></i> Profit Payment</span>
+                                                <span class="spec-val">{{ $post->msg_profit_payment ?? 'Weekly' }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="spec-label"><i class="fas fa-user-shield"></i> Members
+                                                    Invested</span>
                                                 <a href="{{ route('investments.index', ['investment_post_id' => $post->id]) }}"
                                                     class="spec-val text-decoration-none"
                                                     style="color: #1a9e4f;font-weight:700;">
                                                     {{ number_format($post->member_count ?? 0) }}
                                                     Person{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}
                                                 </a>
-                                            @else
-                                                <span class="spec-val">{{ number_format($post->member_count ?? 0) }}
-                                                    Person{{ ($post->member_count ?? 0) != 1 ? 's' : '' }}</span>
-                                            @endauth
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {{-- Progress --}}
-                            <div class="funding-progress">
-                                <div class="funded-pct">{{ $post->funded_percentage }}% Funded</div>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar"
-                                        style="width: {{ $post->funded_percentage }}%"
-                                        aria-valuenow="{{ $post->funded_percentage }}" aria-valuemin="0"
-                                        aria-valuemax="100">
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="invest-amounts">
-                                    <span>Invested:
-                                        <strong>&#2547;{{ number_format($post->current_invested_amount) }}</strong></span>
-                                    <span>Remaining:
-                                        <strong>&#2547;{{ number_format($post->remaining_amount) }}</strong></span>
+
+                                {{-- Progress --}}
+                                <div class="funding-progress">
+                                    <div class="funded-pct">{{ $post->funded_percentage }}% Funded</div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"
+                                            style="width: {{ $post->funded_percentage }}%"
+                                            aria-valuenow="{{ $post->funded_percentage }}" aria-valuemin="0"
+                                            aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <div class="invest-amounts">
+                                        <span>Invested:
+                                            <strong>&#2547;{{ number_format($post->current_invested_amount) }}</strong></span>
+                                        <span>Remaining:
+                                            <strong>&#2547;{{ number_format($post->remaining_amount) }}</strong></span>
+                                    </div>
                                 </div>
+
+                                {{-- CTA Button → goes to details page --}}
+                                <a href="{{ route('opportunity.show', $post->id) }}"
+                                    class="btn-invest d-block text-center mt-3 text-decoration-none"
+                                    style="border-radius:8px;">
+                                    View Details &amp; Invest
+                                </a>
+
                             </div>
-
-                            {{-- CTA Button → goes to details page --}}
-                            <a href="{{ route('opportunity.show', $post->id) }}"
-                                class="btn-invest d-block text-center mt-3 text-decoration-none"
-                                style="border-radius:8px;">
-                                View Details &amp; Invest
-                            </a>
-
                         </div>
-                    </div>
-                @empty
-                    <div class="col-12 text-center py-5">
-                        <p class="text-muted">No active investment opportunities right now. Check back soon!</p>
-                    </div>
-                @endforelse
+                    @empty
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted">No active investment opportunities right now. Check back soon!</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endauth
 
     {{-- ─────────────── FEATURES STRIP ─────────────── --}}
     <section class="features-strip" id="features">

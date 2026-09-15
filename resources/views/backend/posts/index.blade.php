@@ -284,8 +284,11 @@
                                             <a href="{{ route('opportunity.show', $post->id) }}" target="_blank" class="fw-bold text-dark text-truncate d-block mb-0.5 hover-primary" style="font-size: 0.88rem; max-width: 190px;" title="{{ $post->title }}">
                                                 {{ $post->title }} <i class="fas fa-arrow-up-right-from-square extra-small text-muted ms-1"></i>
                                             </a>
-                                            <div class="text-muted extra-small">
-                                                <i class="fas fa-truck-fast me-1 text-primary"></i>{{ $post->expected_import_days }} Days Import
+                                            <div class="text-muted extra-small d-flex align-items-center gap-2 mt-1 flex-wrap">
+                                                <span><i class="fas fa-truck-fast me-1 text-primary"></i>{{ $post->expected_import_days }} Days</span>
+                                                <span class="badge {{ $post->type === 'Local' ? 'bg-warning-subtle text-dark border border-warning' : ($post->type === 'Manufacture' ? 'bg-info-subtle text-dark border border-info' : 'bg-primary-subtle text-primary border border-primary-subtle') }} px-1.5 py-0.5" style="font-size:0.7rem;">
+                                                    <i class="fas {{ $post->type === 'Local' ? 'fa-location-dot' : ($post->type === 'Manufacture' ? 'fa-industry' : 'fa-ship') }} me-1"></i>{{ $post->type ?? 'Import' }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -379,6 +382,8 @@
                                             data-target_amount="{{ $post->target_amount }}"
                                             data-min_investment_amount="{{ $post->min_investment_amount }}"
                                             data-status="{{ $post->status }}"
+                                            data-type="{{ $post->type ?? 'Import' }}"
+                                            data-msg_profit_payment="{{ $post->msg_profit_payment ?? 'Weekly' }}"
                                             data-image="{{ $coverImage }}"
                                             data-gallery_images='@json($post->gallery_images ?? [])'
                                             title="Edit Post">
@@ -441,19 +446,38 @@
                     @csrf
                     <div class="modal-body p-4">
                         <div class="row g-3">
-                            <div class="col-md-8 col-12">
+                            <div class="col-md-6 col-12">
                                 <label class="form-label fw-semibold small text-dark">Product Title <span class="text-danger">*</span></label>
                                 <input type="text" name="title" class="form-control" placeholder="e.g. Wireless ANC Earbuds Pro" required>
                             </div>
-                            <div class="col-md-4 col-12">
+                            <div class="col-md-6 col-12">
                                 <label class="form-label fw-semibold small text-dark">Status <span class="text-danger">*</span></label>
                                 <select name="status" class="form-select" required>
-                                    <option value="active" selected>🟢 Active (Open for Bids)</option>
+                                    <option value="active" selected>🟢 Active</option>
                                     <option value="upcoming">🔵 Upcoming</option>
                                     <option value="imported">📦 Imported</option>
                                     <option value="sold_out">🟠 Sold Out</option>
                                     <option value="completed">🏆 Completed</option>
                                 </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Investment Type <span class="text-danger">*</span></label>
+                                <select name="type" class="form-select" required>
+                                    <option value="Import" selected>🚢 Import</option>
+                                    <option value="Local">📍 Local</option>
+                                    <option value="Manufacture">🏭 Manufacture</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Duration (Days) <span class="text-danger">*</span></label>
+                                <input type="number" name="expected_import_days" class="form-control" value="25" min="1" required>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Profit Payment Text <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-wallet"></i></span>
+                                    <input type="text" name="msg_profit_payment" class="form-control" value="Weekly" placeholder="e.g. Weekly, Monthly, Daily" required>
+                                </div>
                             </div>
 
                             <div class="col-md-4 col-12">
@@ -473,11 +497,6 @@
                                     <span class="input-group-text bg-light border-end-0 fw-bold text-success">+&#2547;</span>
                                     <input type="number" name="profit_per_unit" id="create_profit_per_unit" class="form-control text-success fw-semibold" value="50" step="0.01" min="0" required>
                                 </div>
-                            </div>
-
-                            <div class="col-md-4 col-12">
-                                <label class="form-label fw-semibold small text-dark">Import Duration (Days) <span class="text-danger">*</span></label>
-                                <input type="number" name="expected_import_days" class="form-control" value="25" min="1" required>
                             </div>
                             <div class="col-md-4 col-12">
                                 <label class="form-label fw-semibold small text-dark">Target Amount (&#2547;)</label>
@@ -535,11 +554,11 @@
                     @method('PUT')
                     <div class="modal-body p-4">
                         <div class="row g-3">
-                            <div class="col-md-8 col-12">
+                            <div class="col-md-6 col-12">
                                 <label class="form-label fw-semibold small text-dark">Product Title <span class="text-danger">*</span></label>
                                 <input type="text" name="title" id="edit_title" class="form-control" required>
                             </div>
-                            <div class="col-md-4 col-12">
+                            <div class="col-md-6 col-12">
                                 <label class="form-label fw-semibold small text-dark">Status <span class="text-danger">*</span></label>
                                 <select name="status" id="edit_status" class="form-select" required>
                                     <option value="active">🟢 Active</option>
@@ -548,6 +567,25 @@
                                     <option value="sold_out">🟠 Sold Out</option>
                                     <option value="completed">🏆 Completed</option>
                                 </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Investment Type <span class="text-danger">*</span></label>
+                                <select name="type" id="edit_type" class="form-select" required>
+                                    <option value="Import">🚢 Import</option>
+                                    <option value="Local">📍 Local</option>
+                                    <option value="Manufacture">🏭 Manufacture</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Duration (Days) <span class="text-danger">*</span></label>
+                                <input type="number" name="expected_import_days" id="edit_expected_import_days" class="form-control" min="1" required>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label fw-semibold small text-dark">Profit Payment Text <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-wallet"></i></span>
+                                    <input type="text" name="msg_profit_payment" id="edit_msg_profit_payment" class="form-control" placeholder="e.g. Weekly, Monthly" required>
+                                </div>
                             </div>
 
                             <div class="col-md-4 col-12">
@@ -567,11 +605,6 @@
                                     <span class="input-group-text bg-light border-end-0 fw-bold text-success">+&#2547;</span>
                                     <input type="number" name="profit_per_unit" id="edit_profit_per_unit" class="form-control text-success fw-semibold" step="0.01" min="0" required>
                                 </div>
-                            </div>
-
-                            <div class="col-md-4 col-12">
-                                <label class="form-label fw-semibold small text-dark">Import Duration (Days) <span class="text-danger">*</span></label>
-                                <input type="number" name="expected_import_days" id="edit_expected_import_days" class="form-control" min="1" required>
                             </div>
                             <div class="col-md-4 col-12">
                                 <label class="form-label fw-semibold small text-dark">Target Amount (&#2547;)</label>
@@ -697,6 +730,8 @@
                     document.getElementById('edit_target_amount').value = this.getAttribute('data-target_amount') || '';
                     document.getElementById('edit_min_investment_amount').value = this.getAttribute('data-min_investment_amount') || '';
                     document.getElementById('edit_status').value = this.getAttribute('data-status') || 'active';
+                    document.getElementById('edit_type').value = this.getAttribute('data-type') || 'Import';
+                    document.getElementById('edit_msg_profit_payment').value = this.getAttribute('data-msg_profit_payment') || 'Weekly';
 
                     // Set description in Summernote
                     var desc = this.getAttribute('data-description') || '';

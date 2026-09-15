@@ -104,6 +104,16 @@
                                     @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
 
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold small text-dark">Hero Section Video URL (YouTube Video - "How It Works")</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0 text-danger"><i class="fab fa-youtube"></i></span>
+                                        <input type="url" name="hero_video_url" class="form-control border-start-0 ps-1 @error('hero_video_url') is-invalid @enderror" value="{{ old('hero_video_url', $setting->hero_video_url) }}" placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID">
+                                    </div>
+                                    <small class="text-muted extra-small">Paste your YouTube video link here to show how this website works in the hero section without overloading the site.</small>
+                                    @error('hero_video_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+
                                 <div class="col-md-6 col-12">
                                     <label class="form-label fw-semibold small text-dark">Short Portal Description</label>
                                     <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="3" placeholder="Brief summary of your investment platform...">{{ old('description', $setting->description) }}</textarea>

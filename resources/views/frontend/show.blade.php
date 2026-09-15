@@ -101,12 +101,16 @@
                     @endphp
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 position-relative">
                         <div class="p-3 text-center bg-white">
-                            <a href="{{ asset($post->image ?? 'asset/images/earbuds.jpg') }}" class="glightbox"
-                                data-gallery="product-details" id="mainProductAnchor">
-                                <img src="{{ asset($post->image ?? 'asset/images/earbuds.jpg') }}" alt="{{ $post->title }}"
-                                    id="mainProductImage" class="img-fluid rounded-3"
-                                    style="max-height: 320px; width: 100%; object-fit: contain;" />
-                            </a>
+                            @foreach ($galleryUrls as $gIdx => $gUrl)
+                                <a href="{{ $gUrl }}" class="glightbox {{ $gIdx > 0 ? 'd-none' : '' }}"
+                                    data-gallery="product-details-{{ $post->id }}" @if($gIdx === 0) id="mainProductAnchor" @endif>
+                                    @if ($gIdx === 0)
+                                        <img src="{{ $gUrl }}" alt="{{ $post->title }}"
+                                            id="mainProductImage" class="img-fluid rounded-3"
+                                            style="max-height: 320px; width: 100%; object-fit: contain;" />
+                                    @endif
+                                </a>
+                            @endforeach
                         </div>
 
                         <!-- Circular Active Counter Badge -->
@@ -135,8 +139,9 @@
                 <div class="col-lg-5">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <h3 class="fw-bold text-dark mb-0">{{ $post->title }}</h3>
-                        <span
-                            class="badge bg-success-subtle text-success border border-success border-opacity-25 rounded-pill px-3 py-1.5 small fw-semibold">New</span>
+                        <span class="badge {{ $post->type === 'Local' ? 'bg-warning-subtle text-dark border border-warning' : ($post->type === 'Manufacture' ? 'bg-info-subtle text-dark border border-info' : 'bg-success-subtle text-success border border-success') }} rounded-pill px-3 py-1.5 small fw-semibold">
+                            <i class="fas {{ $post->type === 'Local' ? 'fa-location-dot' : ($post->type === 'Manufacture' ? 'fa-industry' : 'fa-ship') }} me-1"></i>{{ $post->type ?? 'Import' }}
+                        </span>
                     </div>
 
                     <div class="text-muted small mb-4 lh-lg">
@@ -166,7 +171,7 @@
                                     <strong class="text-dark">&#2547;{{ number_format($post->unit_cost) }}</strong>
                                 </li>
                                 <li class="d-flex justify-content-between">
-                                    <span class="text-muted">Import Time</span>
+                                    <span class="text-muted">{{ $post->time_label }}</span>
                                     <strong class="text-dark">{{ $post->expected_import_days }} Days</strong>
                                 </li>
                                 <li class="d-flex justify-content-between">
@@ -176,7 +181,7 @@
                                 </li>
                                 <li class="d-flex justify-content-between">
                                     <span class="text-muted">Profit Distribution</span>
-                                    <strong class="text-dark">Weekly After Sales Start</strong>
+                                    <strong class="text-dark">{{ $post->msg_profit_payment ?? 'Weekly' }}</strong>
                                 </li>
                                 <li class="d-flex justify-content-between">
                                     <span class="text-muted">Investor</span>
@@ -238,7 +243,7 @@
                         <div class="rounded-3 gap-2 bg-primary-subtle text-primary"><i
                                 class="fas fa-calendar-alt fa-lg"></i></div>
                         <div>
-                            <small class="text-muted d-block">Import Time</small>
+                            <small class="text-muted d-block">{{ $post->time_label }}</small>
                             <strong class="text-dark">{{ $post->expected_import_days }} Days</strong>
                         </div>
                     </div>
@@ -249,7 +254,7 @@
                         </div>
                         <div>
                             <small class="text-muted d-block">Profit Payment</small>
-                            <strong class="text-dark">Weekly</strong>
+                            <strong class="text-dark">{{ $post->msg_profit_payment ?? 'Weekly' }}</strong>
                         </div>
                     </div>
                 </div>
@@ -269,7 +274,7 @@
                         </div>
                         <div>
                             <small class="text-muted d-block">Investment Type</small>
-                            <strong class="text-dark">Single Investor</strong>
+                            <strong class="text-dark">{{ $post->type ?? 'Import' }}</strong>
                         </div>
                     </div>
                 </div>
@@ -411,12 +416,12 @@
                                                 pcs</strong>
                                         </li>
                                         <li class="d-flex justify-content-between">
-                                            <span class="text-muted">Import Time</span>
+                                            <span class="text-muted">{{ $post->time_label }}</span>
                                             <strong class="text-dark">{{ $post->expected_import_days }} Days</strong>
                                         </li>
                                         <li class="d-flex justify-content-between">
                                             <span class="text-muted">Profit Distribution</span>
-                                            <strong class="text-dark">Weekly</strong>
+                                            <strong class="text-dark">{{ $post->msg_profit_payment ?? 'Weekly' }}</strong>
                                         </li>
                                         <li class="d-flex justify-content-between border-top pt-2 mt-1">
                                             <span class="text-muted">Total Investment</span>

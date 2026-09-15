@@ -25,6 +25,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('copyright_text')->nullable();
             $table->json('social_links')->nullable();     // {"facebook":"url","twitter":"url",...}
+            $table->text('hero_video_url')->nullable();
             $table->timestamps();
         });
     }
