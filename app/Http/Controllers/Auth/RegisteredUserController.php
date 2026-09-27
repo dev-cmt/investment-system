@@ -52,6 +52,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        if ($user->hasRole('investor') && !$user->hasRole(['admin', 'superadmin'])) {
+            return redirect()->intended(route('home', [], false) . '#opportunities');
+        }
+
         return redirect(route('dashboard', absolute: false));
     }
 }

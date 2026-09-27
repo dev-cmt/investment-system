@@ -28,6 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        if ($user && $user->hasRole('investor') && !$user->hasRole(['admin', 'superadmin'])) {
+            return redirect()->intended(route('home', [], false) . '#opportunities');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
