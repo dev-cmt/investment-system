@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\PageContentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/cc', function () {
@@ -59,6 +60,11 @@ Route::middleware('auth')->group(function () {
 
     // Role & Permission Management Routes
     Route::resource('roles', RolePermissionController::class);
+
+    // Page content settings
+    Route::get('/pages-content', [PageContentController::class, 'index'])->name('settings.pages-content.index');
+    Route::post('/pages-content/update', [PageContentController::class, 'update'])->name('settings.pages-content.update');
+    Route::post('/pages-content/reset', [PageContentController::class, 'reset'])->name('settings.pages-content.reset');
 });
 
 require __DIR__.'/auth.php';

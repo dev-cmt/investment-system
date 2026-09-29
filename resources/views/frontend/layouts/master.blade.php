@@ -4,6 +4,10 @@
   $companyDescription = $setting->description ?? 'Invest in real import products and earn weekly profit.';
   $faviconUrl = $setting->favicon_url ?? null;
   $brandLogo = $setting->primary_logo_url ?? null;
+
+  $seoMetaTitle = !empty($homeContent['seo']['meta_title']) ? $homeContent['seo']['meta_title'] : ($title ?? ($companyName . ' - Invest in Real Products, Earn Weekly Profit'));
+  $seoMetaDesc = !empty($homeContent['seo']['meta_description']) ? $homeContent['seo']['meta_description'] : ($companyName . ' - ' . $companyDescription);
+  $seoMetaKeywords = !empty($homeContent['seo']['meta_keywords']) ? $homeContent['seo']['meta_keywords'] : null;
 @endphp
 
 <!DOCTYPE html>
@@ -16,9 +20,11 @@
   @if($faviconUrl)
     <link rel="icon" type="image/x-icon" href="{{ $faviconUrl }}">
   @endif
-  <meta name="description"
-    content="{{ $companyName }} - {{ $companyDescription }}" />
-  <title>{{ $title ?? ($companyName . ' - Invest in Real Products, Earn Weekly Profit') }}</title>
+  <meta name="description" content="{{ $seoMetaDesc }}" />
+  @if($seoMetaKeywords)
+    <meta name="keywords" content="{{ $seoMetaKeywords }}" />
+  @endif
+  <title>{{ $seoMetaTitle }}</title>
   <!-- Fonts -->
   <link rel="stylesheet" href="{{ asset('css/fonts.css') }}" />
   <!-- Bootstrap 5 -->

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InvestmentPost;
+use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Investment;
@@ -16,6 +17,9 @@ class HomeController extends Controller
      */
     public function index(): View
     {
+        $page = Page::getPage('home');
+        $homeContent = $page->content ?? Page::defaultContentFor('home');
+
         $posts = InvestmentPost::withCount([
                 'investments as member_count' => function ($q) {
                     $q->whereIn('status', ['pending','active','sold','completed']);
@@ -23,7 +27,8 @@ class HomeController extends Controller
             ])
             ->whereIn('status', ['active', 'upcoming', 'imported'])
             ->get();
-        return view('frontend.index', compact('posts'));
+
+        return view('frontend.index', compact('posts', 'page', 'homeContent'));
     }
 
     /**

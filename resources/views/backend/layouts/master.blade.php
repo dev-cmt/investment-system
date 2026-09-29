@@ -11,9 +11,10 @@
             ['label' => 'Investments', 'route' => 'investments.index', 'match' => 'investments.*',     'icon' => 'fas fa-hand-holding-dollar'],
             ['label' => 'Payments',    'route' => 'payments.index',    'match' => 'payments.*',        'icon' => 'fas fa-receipt'],
             ['label' => 'Withdrawals', 'route' => 'withdrawals.index', 'match' => 'withdrawals.*',     'icon' => 'fas fa-money-bill-transfer'],
-            ['label' => 'Clients',     'route' => 'users.index',       'match' => 'users.*',           'icon' => 'fas fa-users'],
-            ['label' => 'Roles',       'route' => 'roles.index',       'match' => 'roles.*',           'icon' => 'fas fa-user-shield'],
-            ['label' => 'Settings',    'route' => 'settings.index',    'match' => 'settings.*',        'icon' => 'fas fa-gear'],
+            ['label' => 'Clients',      'route' => 'users.index',                  'match' => 'users.*',                  'icon' => 'fas fa-users'],
+            ['label' => 'Roles',        'route' => 'roles.index',                  'match' => 'roles.*',                  'icon' => 'fas fa-user-shield'],
+            ['label' => 'Page Content', 'route' => 'settings.pages-content.index', 'match' => 'settings.pages-content.*', 'icon' => 'fas fa-file-waveform'],
+            ['label' => 'Settings',     'route' => 'settings.index',               'match' => 'settings.index',           'icon' => 'fas fa-gear'],
         ];
     } else {
         $navLinks = [

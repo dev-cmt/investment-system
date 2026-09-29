@@ -73,6 +73,11 @@
                 <a href="{{ route('withdrawals.index') }}" class="dd-link">
                     <i class="fas fa-money-bill-transfer"></i> Withdrawals
                 </a>
+                @if($isAdmin && Route::has('settings.pages-content.index'))
+                <a href="{{ route('settings.pages-content.index') }}" class="dd-link">
+                    <i class="fas fa-file-waveform"></i> Home Page Content
+                </a>
+                @endif
                 @if($isAdmin && Route::has('settings.index'))
                 <a href="{{ route('settings.index') }}" class="dd-link">
                     <i class="fas fa-gear"></i> System Settings

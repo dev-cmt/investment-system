@@ -33,7 +33,6 @@ class SettingController extends Controller
             'phone2'         => 'nullable|string|max:30',
             'address'        => 'nullable|string|max:500',
             'map_url'        => 'nullable|url|max:1000',
-            'hero_video_url' => 'nullable|url|max:1000',
             'description'    => 'nullable|string|max:1000',
             'copyright_text' => 'nullable|string|max:255',
             'logo'           => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,svg|max:2048',
@@ -80,7 +79,6 @@ class SettingController extends Controller
         $setting->phone2         = $request->phone2;
         $setting->address        = $request->address;
         $setting->map_url        = $request->map_url;
-        $setting->hero_video_url = $request->hero_video_url;
         $setting->description    = $request->description;
         $setting->copyright_text = $request->copyright_text;
         $setting->social_links   = $socialLinks;

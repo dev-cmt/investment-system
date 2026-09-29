@@ -209,6 +209,10 @@
 @endpush
 
 @section('content')
+    @php
+        $homeContent = $homeContent ?? ($page->content ?? \App\Models\Page::defaultHomeContent());
+    @endphp
+
     {{-- ─────────────── HERO ─────────────── --}}
     <section class="hero-section" id="heroSection">
         <div class="container">
@@ -216,66 +220,72 @@
 
                 {{-- Left --}}
                 <div class="col-lg-6">
-                    <div class="hero-live-badge mb-3" data-aos="fade-down">
-                        <span class="hero-live-dot"></span> LIVE INVESTMENTS ACTIVE
-                    </div>
+                    @if(!empty($homeContent['hero']['show_badge']))
+                        <div class="hero-live-badge mb-3" data-aos="fade-down">
+                            <span class="hero-live-dot"></span> {{ $homeContent['hero']['badge_text'] ?? 'LIVE INVESTMENTS ACTIVE' }}
+                        </div>
+                    @endif
+
+                    @php
+                        $heroTitle = $homeContent['hero']['title'] ?? "Invest in Real Products\nEarn Weekly Profit";
+                        $highlight = $homeContent['hero']['highlight_text'] ?? 'Weekly Profit';
+                        $formattedTitle = nl2br(e($heroTitle));
+                        if (!empty($highlight)) {
+                            $formattedTitle = str_ireplace(e($highlight), '<span class="highlight">' . e($highlight) . '</span>', $formattedTitle);
+                        }
+                    @endphp
                     <h1 class="hero-title" data-aos="fade-up" data-aos-delay="50">
-                        Invest in Real Products<br>
-                        Earn <span class="highlight">Weekly Profit</span>
+                        {!! $formattedTitle !!}
                     </h1>
+
                     <p class="hero-desc" data-aos="fade-up" data-aos-delay="100">
-                        We import high demand products from China.<br>
-                        You invest, we handle the rest and you earn<br>
-                        weekly profit after sales.
+                        {!! nl2br(e($homeContent['hero']['description'] ?? "We import high demand products from China.\nYou invest, we handle the rest and you earn\nweekly profit after sales.")) !!}
                     </p>
 
                     <div class="d-flex align-items-center gap-3 mb-4" data-aos="fade-up" data-aos-delay="150">
                         @auth
-                            <a href="#opportunities" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
-                                <i class="fas fa-rocket me-1.5"></i> Explore Opportunities
+                            <a href="{{ $homeContent['hero']['btn1_link'] ?? '#opportunities' }}" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
+                                <i class="fas fa-rocket me-1.5"></i> {{ $homeContent['hero']['btn1_auth_text'] ?? ($homeContent['hero']['btn1_text'] ?? 'Explore Opportunities') }}
                             </a>
                         @else
                             <a href="{{ route('register') }}" class="btn btn-signup rounded-pill px-4 py-2.5 fw-bold shadow-sm">
-                                <i class="fas fa-user-plus me-1.5"></i> Sign Up to Invest
+                                <i class="fas fa-user-plus me-1.5"></i> {{ $homeContent['hero']['btn1_guest_text'] ?? 'Sign Up to Invest' }}
                             </a>
                         @endauth
-                        <a href="#howItWorks" class="btn btn-outline-success rounded-pill px-4 py-2.5 fw-bold">
-                            <i class="fas fa-play-circle me-1.5"></i> How It Works
+                        <a href="{{ $homeContent['hero']['btn2_link'] ?? '#howItWorks' }}" class="btn btn-outline-success rounded-pill px-4 py-2.5 fw-bold">
+                            <i class="fas fa-play-circle me-1.5"></i> {{ $homeContent['hero']['btn2_text'] ?? 'How It Works' }}
                         </a>
                     </div>
 
-                    <div class="hero-badges" data-aos="fade-up" data-aos-delay="200">
-                        <div class="hero-badge-item">
-                            <div class="hero-badge-icon"><i class="fa-solid fa-shield-heart"></i></div>
-                            <div>
-                                <span class="hero-badge-label">100% Secure</span>
-                                <span class="hero-badge-sub">Your investment is safe</span>
-                            </div>
+                    @if(!empty($homeContent['hero']['trust_badges']))
+                        <div class="hero-badges" data-aos="fade-up" data-aos-delay="200">
+                            @foreach($homeContent['hero']['trust_badges'] as $tb)
+                                <div class="hero-badge-item">
+                                    <div class="hero-badge-icon"><i class="{{ $tb['icon'] ?? 'fa-solid fa-shield-heart' }}"></i></div>
+                                    <div>
+                                        <span class="hero-badge-label">{{ $tb['title'] ?? '' }}</span>
+                                        <span class="hero-badge-sub">{{ $tb['subtitle'] ?? '' }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="hero-badge-item">
-                            <div class="hero-badge-icon"><i class="fas fa-clock"></i></div>
-                            <div>
-                                <span class="hero-badge-label">Weekly Profit</span>
-                                <span class="hero-badge-sub">Paid every week</span>
-                            </div>
-                        </div>
-                        <div class="hero-badge-item">
-                            <div class="hero-badge-icon"><i class="fas fa-truck-fast"></i></div>
-                            <div>
-                                <span class="hero-badge-label">Fast Import</span>
-                                <span class="hero-badge-sub">Products in 25-30 days</span>
-                            </div>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 {{-- Right image & floating cards / Video --}}
                 <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
                     <div class="hero-image-wrapper position-relative overflow-hidden rounded-4 shadow-lg" style="background:#0f172a;">
-                        @if(!empty($setting->hero_video_embed_url))
+                        @php
+                            $mediaType = $homeContent['hero']['media_type'] ?? 'image';
+                            $rawVideoUrl = !empty($homeContent['hero']['video_url']) ? $homeContent['hero']['video_url'] : ($setting->hero_video_url ?? null);
+                            $videoUrl = \App\Helpers\VideoHelper::toEmbedUrl($rawVideoUrl);
+                            $heroImage = $homeContent['hero']['image'] ?? 'images/hero.jpg';
+                        @endphp
+
+                        @if($mediaType === 'video' && !empty($videoUrl))
                             <div class="ratio ratio-16x9 rounded-4 overflow-hidden border border-light border-opacity-10 shadow">
-                                <iframe src="{{ $setting->hero_video_embed_url }}"
-                                        title="How This Website Works"
+                                <iframe src="{{ $videoUrl }}"
+                                        title="Platform Video"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen
                                         style="border:0;"
@@ -283,22 +293,30 @@
                                 </iframe>
                             </div>
                         @else
-                            <img src="{{ asset('images/hero.jpg') }}" alt="Global import and investment" />
+                            <img src="{{ asset($heroImage) }}" alt="{{ $companyName ?? 'Investment' }}" onerror="this.src='{{ asset('images/hero.jpg') }}'" />
                         @endif
-                        <div class="hero-float-card card-left" data-aos="fade-right" data-aos-delay="400">
-                            <div class="fc-icon"><i class="fas fa-arrow-trend-up"></i></div>
-                            <div>
-                                <span class="fc-label">Total Investors</span>
-                                <span class="fc-value">1,240+</span>
+
+                        {{-- Floating Card 1 (Left) --}}
+                        @if(!empty($homeContent['hero']['stat_card_1_label']))
+                            <div class="hero-float-card card-left" data-aos="fade-right" data-aos-delay="400">
+                                <div class="fc-icon"><i class="{{ $homeContent['hero']['stat_card_1_icon'] ?? 'fas fa-arrow-trend-up' }}"></i></div>
+                                <div>
+                                    <span class="fc-label">{{ $homeContent['hero']['stat_card_1_label'] ?? 'Total Investors' }}</span>
+                                    <span class="fc-value">{{ $homeContent['hero']['stat_card_1_value'] ?? '1,240+' }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="hero-float-card card-right" data-aos="fade-left" data-aos-delay="500">
-                            <div class="fc-icon text-success"><i class="fa-solid fa-shield-heart"></i></div>
-                            <div>
-                                <span class="fc-label">Secured Investments</span>
-                                <span class="fc-value">100%</span>
+                        @endif
+
+                        {{-- Floating Card 2 (Right) --}}
+                        @if(!empty($homeContent['hero']['stat_card_2_label']))
+                            <div class="hero-float-card card-right" data-aos="fade-left" data-aos-delay="500">
+                                <div class="fc-icon text-success"><i class="{{ $homeContent['hero']['stat_card_2_icon'] ?? 'fa-solid fa-shield-heart' }}"></i></div>
+                                <div>
+                                    <span class="fc-label">{{ $homeContent['hero']['stat_card_2_label'] ?? 'Secured Investments' }}</span>
+                                    <span class="fc-value">{{ $homeContent['hero']['stat_card_2_value'] ?? '100%' }}</span>
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -313,9 +331,9 @@
 
                 {{-- Header --}}
                 <div class="section-header" data-aos="fade-up">
-                    <h2 class="section-title">Active Investment Opportunities</h2>
+                    <h2 class="section-title">{{ $homeContent['opportunities']['title'] ?? 'Active Investment Opportunities' }}</h2>
                     <a href="#howItWorks" class="how-it-works-link">
-                        <i class="fas fa-circle-info"></i> How It Works
+                        <i class="fas fa-circle-info"></i> {{ $homeContent['opportunities']['how_it_works_text'] ?? 'How It Works' }}
                     </a>
                 </div>
 
@@ -449,7 +467,7 @@
                         </div>
                     @empty
                         <div class="col-12 text-center py-5">
-                            <p class="text-muted">No active investment opportunities right now. Check back soon!</p>
+                            <p class="text-muted">{{ $homeContent['opportunities']['empty_message'] ?? 'No active investment opportunities right now. Check back soon!' }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -458,91 +476,99 @@
     @endauth
 
     {{-- ─────────────── FEATURES STRIP ─────────────── --}}
-    <section class="features-strip" id="features">
-        <div class="container">
-            <div class="row g-0">
-                <div class="col-md-3 col-sm-6">
-                    <div class="feature-item">
-                        <div class="feature-icon"><i class="fa-solid fa-shield-heart"></i></div>
-                        <div>
-                            <div class="feature-title">Safe &amp; Secure</div>
-                            <div class="feature-desc">Your investment is protected with full transparency.</div>
+    @if(!empty($homeContent['features']['show_section']) && !empty($homeContent['features']['items']))
+        <section class="features-strip" id="features">
+            <div class="container">
+                <div class="row g-0">
+                    @php
+                        $features = $homeContent['features']['items'];
+                        $count = count($features);
+                        $colClass = $count >= 4 ? 'col-md-3 col-sm-6' : ($count == 3 ? 'col-md-4 col-sm-6' : 'col-md-6 col-sm-6');
+                    @endphp
+                    @foreach($features as $feat)
+                        <div class="{{ $colClass }}">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="{{ $feat['icon'] ?? 'fa-solid fa-shield-heart' }}"></i></div>
+                                <div>
+                                    <div class="feature-title">{{ $feat['title'] ?? '' }}</div>
+                                    <div class="feature-desc">{{ $feat['desc'] ?? '' }}</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="feature-item">
-                        <div class="feature-icon"><i class="fas fa-arrows-rotate"></i></div>
-                        <div>
-                            <div class="feature-title">Weekly Profit</div>
-                            <div class="feature-desc">Profit will be paid every week after sales start.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="feature-item">
-                        <div class="feature-icon"><i class="fas fa-truck-fast"></i></div>
-                        <div>
-                            <div class="feature-title">Fast Delivery</div>
-                            <div class="feature-desc">Products are imported within 25-30 days.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="feature-item">
-                        <div class="feature-icon"><i class="fas fa-headset"></i></div>
-                        <div>
-                            <div class="feature-title">Support</div>
-                            <div class="feature-desc">We are here to help you 24/7.</div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     {{-- ─────────────── HOW IT WORKS ─────────────── --}}
-    <section class="py-5 bg-light" id="howItWorks">
-        <div class="container">
-            <div class="text-center mb-5" data-aos="fade-up">
-                <div class="section-label mb-1">Step by Step</div>
-                <h2 class="section-title">How It Works</h2>
-                <p class="text-muted small mt-1 mb-0">A transparent 6-step process from product post to profit</p>
-            </div>
+    @if(!empty($homeContent['how_it_works']['show_section']))
+        <section class="py-5 bg-light" id="howItWorks">
+            <div class="container">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <div class="section-label mb-1">{{ $homeContent['how_it_works']['section_label'] ?? 'Step by Step' }}</div>
+                    <h2 class="section-title">{{ $homeContent['how_it_works']['title'] ?? 'How It Works' }}</h2>
+                    <p class="text-muted small mt-1 mb-0">{{ $homeContent['how_it_works']['subtitle'] ?? 'A transparent 6-step process from product post to profit' }}</p>
+                </div>
 
-            <div class="row g-4">
-                @foreach ([['icon' => 'fa-boxes-packing', 'num' => '01', 'title' => 'Product Posted', 'desc' => 'We post high demand product investment opportunities with full details.'], ['icon' => 'fa-hand-holding-dollar', 'num' => '02', 'title' => 'Investor Invests', 'desc' => 'One investor invests the full product amount.'], ['icon' => 'fa-truck-fast', 'num' => '03', 'title' => 'Product Imported', 'desc' => 'We import the product from China. (Estimated 25 Days)'], ['icon' => 'fa-store', 'num' => '04', 'title' => 'Product Sold', 'desc' => 'After arrival, product selling starts.'], ['icon' => 'fa-calendar-check', 'num' => '05', 'title' => 'Weekly Profit', 'desc' => 'You will receive profit every week.'], ['icon' => 'fa-circle-check', 'num' => '06', 'title' => 'Completed', 'desc' => 'After full profit & capital return, you can re-invest.']] as $i => $step)
-                    <div class="col-6 col-md-4 col-lg-2 text-center step-card" data-aos="fade-up"
-                        data-aos-delay="{{ $i * 80 }}">
-                        <div class="step-icon"><i class="fas {{ $step['icon'] }}"></i></div>
-                        <div class="step-num">{{ $step['num'] }}</div>
-                        <div class="step-title">{{ $step['title'] }}</div>
-                        <p class="step-desc mb-0">{{ $step['desc'] }}</p>
-                    </div>
-                @endforeach
+                <div class="row g-4 justify-content-center">
+                    @php
+                        $steps = $homeContent['how_it_works']['steps'] ?? [];
+                        $stepCol = count($steps) <= 4 ? 'col-md-3 col-sm-6' : 'col-6 col-md-4 col-lg-2';
+                    @endphp
+                    @foreach ($steps as $i => $step)
+                        <div class="{{ $stepCol }} text-center step-card" data-aos="fade-up"
+                            data-aos-delay="{{ $i * 70 }}">
+                            <div class="step-icon"><i class="fas {{ $step['icon'] ?? 'fa-check' }}"></i></div>
+                            <div class="step-num">{{ $step['num'] ?? sprintf('%02d', $i + 1) }}</div>
+                            <div class="step-title">{{ $step['title'] ?? '' }}</div>
+                            <p class="step-desc mb-0">{{ $step['desc'] ?? '' }}</p>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     {{-- ─────────────── WHY INVEST WITH US ─────────────── --}}
-    <section class="py-5" style="background:#0F172A;" id="whyUs">
-        <div class="container">
-            <div class="text-center mb-5" data-aos="fade-up">
-                <h2 class="fw-bold text-white mb-1">Why Invest With Us?</h2>
-                <p class="text-secondary small mb-0">Built for security, transparency, and consistent weekly returns</p>
-            </div>
-            <div class="row g-4">
-                @foreach ([['icon' => 'fa-shield-halved', 'color' => '#38BDF8', 'title' => 'Transparent Process', 'desc' => 'Complete transparency in every import step, custom clearance, and sales reporting.'], ['icon' => 'fa-wallet', 'color' => '#FACC15', 'title' => 'Weekly Profit', 'desc' => 'Profit payouts every week directly to your bank or mobile wallet after sales start.'], ['icon' => 'fa-lock', 'color' => '#4ADE80', 'title' => 'Secure Investment', 'desc' => 'Single product & single investor model ensuring clear ownership and security.'], ['icon' => 'fa-award', 'color' => '#C084FC', 'title' => 'Proven Track Record', 'desc' => 'Successful imports & happy investors across multiple product batches.']] as $i => $w)
-                    <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
-                        <div class="why-card">
-                            <div class="why-icon" style="color:{{ $w['color'] }}"><i
-                                    class="fas {{ $w['icon'] }}"></i></div>
-                            <h6 class="fw-bold text-white mb-2">{{ $w['title'] }}</h6>
-                            <p class="text-secondary small mb-0">{{ $w['desc'] }}</p>
+    @if(!empty($homeContent['why_invest']['show_section']))
+        <section class="py-5" style="background:#0F172A;" id="whyUs">
+            <div class="container">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="fw-bold text-white mb-1">{{ $homeContent['why_invest']['title'] ?? 'Why Invest With Us?' }}</h2>
+                    <p class="text-secondary small mb-0">{{ $homeContent['why_invest']['subtitle'] ?? 'Built for security, transparency, and consistent weekly returns' }}</p>
+                </div>
+                <div class="row g-4 justify-content-center">
+                    @php
+                        $whyCards = $homeContent['why_invest']['cards'] ?? [];
+                        $whyCol = count($whyCards) <= 3 ? 'col-md-4 col-sm-6' : 'col-md-3 col-sm-6';
+                    @endphp
+                    @foreach ($whyCards as $i => $w)
+                        <div class="{{ $whyCol }}" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
+                            <div class="why-card">
+                                <div class="why-icon" style="color:{{ $w['color'] ?? '#38BDF8' }}">
+                                    <i class="fas {{ $w['icon'] ?? 'fa-shield-halved' }}"></i>
+                                </div>
+                                <h6 class="fw-bold text-white mb-2">{{ $w['title'] ?? '' }}</h6>
+                                <p class="text-secondary small mb-0">{{ $w['desc'] ?? '' }}</p>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
+    {{-- ─────────────── CALL TO ACTION BANNER (OPTIONAL) ─────────────── --}}
+    @if(!empty($homeContent['cta']['show_section']))
+        <section class="py-5 text-white text-center position-relative overflow-hidden" id="ctaSection" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
+            <div class="container py-4 position-relative" style="z-index:2;" data-aos="zoom-in">
+                <h2 class="fw-bold text-white mb-3">{{ $homeContent['cta']['title'] ?? 'Ready to Start Your Investment Journey?' }}</h2>
+                <p class="text-white-50 mb-4 mx-auto" style="max-width: 650px;">{{ $homeContent['cta']['subtitle'] ?? 'Join our verified investors community and earn reliable weekly returns.' }}</p>
+                <a href="{{ $homeContent['cta']['btn_link'] ?? route('register') }}" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-success shadow-lg">
+                    <i class="fas fa-rocket me-1.5"></i> {{ $homeContent['cta']['btn_text'] ?? 'Create Free Account' }}
+                </a>
+            </div>
+        </section>
+    @endif
 @endsection

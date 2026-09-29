@@ -29,20 +29,11 @@ class Setting extends Model
     ];
 
     /**
-     * Get YouTube embed URL for hero section video.
+     * Get YouTube/Vimeo embed URL for hero section video.
      */
     public function getHeroVideoEmbedUrlAttribute(): ?string
     {
-        $url = trim($this->hero_video_url ?? '');
-        if (empty($url)) {
-            return null;
-        }
-
-        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $url, $matches)) {
-            return 'https://www.youtube.com/embed/' . $matches[1];
-        }
-
-        return $url;
+        return \App\Helpers\VideoHelper::toEmbedUrl($this->hero_video_url);
     }
 
     protected $casts = [
