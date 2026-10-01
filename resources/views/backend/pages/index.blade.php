@@ -118,6 +118,27 @@
 </style>
 @endpush
 
+@php
+    $pageTitles = [
+        'home'          => 'Home Page',
+        'about'         => 'About Us Page',
+        'contact'       => 'Contact Us Page',
+        'privacy'       => 'Privacy Policy Page',
+        'terms'         => 'Terms & Conditions Page',
+        'opportunities' => 'Active Opportunities Page',
+    ];
+    $pageRoutes = [
+        'home'          => route('home'),
+        'about'         => route('page.about'),
+        'contact'       => route('page.contact'),
+        'privacy'       => route('page.privacy'),
+        'terms'         => route('page.terms'),
+        'opportunities' => route('page.opportunities'),
+    ];
+    $currentTitle = $pageTitles[$slug] ?? ucfirst($slug) . ' Page';
+    $liveUrl = $pageRoutes[$slug] ?? route('home');
+@endphp
+
 <div class="inv-page-container">
 
     {{-- ── 1. Hero Header ───────────────────────────────────────────── --}}
@@ -128,16 +149,16 @@
             </div>
             <div>
                 <div class="d-flex align-items-center gap-2">
-                    <h4 class="fw-bold mb-0 text-dark">Home Page Content Manager</h4>
+                    <h4 class="fw-bold mb-0 text-dark">{{ $currentTitle }} Content Manager</h4>
                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 extra-small fw-semibold">
                         <i class="fas fa-circle fa-beat-fade" style="font-size:0.5rem;"></i> Live
                     </span>
                 </div>
-                <p class="text-muted small mb-0 mt-0.5">Control every section, text, badge, step, card, and visual on the public-facing home page.</p>
+                <p class="text-muted small mb-0 mt-0.5">Control every section, text, badge, and media on the public-facing {{ strtolower($currentTitle) }}.</p>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('home') }}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-2">
+            <a href="{{ $liveUrl }}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-2">
                 <i class="fas fa-arrow-up-right-from-square"></i>
                 <span class="d-none d-sm-inline">View Live</span>
             </a>
@@ -147,6 +168,28 @@
                 <span class="d-none d-sm-inline">Reset Defaults</span>
             </button>
         </div>
+    </div>
+
+    {{-- ── Page Switcher Pills ──────────────────────────────────────── --}}
+    <div class="d-flex align-items-center gap-2 mb-4 overflow-auto pb-1 flex-nowrap">
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'home']) }}" class="btn {{ $slug === 'home' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-house"></i> Home Page
+        </a>
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'about']) }}" class="btn {{ $slug === 'about' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-building"></i> About Us
+        </a>
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'contact']) }}" class="btn {{ $slug === 'contact' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-headset"></i> Contact Us
+        </a>
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'privacy']) }}" class="btn {{ $slug === 'privacy' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-user-shield"></i> Privacy Policy
+        </a>
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'terms']) }}" class="btn {{ $slug === 'terms' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-scale-balanced"></i> Terms &amp; Conditions
+        </a>
+        <a href="{{ route('settings.pages-content.index', ['slug' => 'opportunities']) }}" class="btn {{ $slug === 'opportunities' ? 'btn-success text-white shadow-sm' : 'btn-outline-secondary' }} btn-sm rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 text-nowrap">
+            <i class="fas fa-fire"></i> Active Opportunities
+        </a>
     </div>
 
     {{-- ── Flash Notifications ──────────────────────────────────────── --}}
@@ -175,9 +218,18 @@
         @csrf
         <input type="hidden" name="slug" value="{{ $slug ?? 'home' }}">
 
-        {{-- Tab Navigation --}}
-        <div class="inv-table-card mb-0 p-0 overflow-hidden mb-4">
-            <div class="db-panel-head bg-light border-bottom-0" style="border-radius: 14px 14px 0 0;">
+        @if($slug === 'about')
+            @include('backend.pages.partials.about')
+        @elseif($slug === 'contact')
+            @include('backend.pages.partials.contact')
+        @elseif($slug === 'privacy' || $slug === 'terms')
+            @include('backend.pages.partials.legal')
+        @elseif($slug === 'opportunities')
+            @include('backend.pages.partials.opportunities')
+        @else
+            {{-- Tab Navigation for Home Page --}}
+            <div class="inv-table-card mb-0 p-0 overflow-hidden mb-4">
+                <div class="db-panel-head bg-light border-bottom-0" style="border-radius: 14px 14px 0 0;">
                 <ul class="nav tab-pill-nav gap-1 overflow-auto flex-nowrap pb-1 mb-0" id="pageEditorTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-hero" type="button" role="tab" aria-selected="true">
@@ -552,6 +604,7 @@
                                 <p class="small text-muted mb-0">Display the icon highlight strip beneath the investments listing</p>
                             </div>
                             <div class="form-check form-switch mb-0">
+                                <input type="hidden" name="content[features][show_section]" value="0">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                        name="content[features][show_section]" value="1"
                                        {{ !empty($content['features']['show_section']) ? 'checked' : '' }}>
@@ -614,6 +667,7 @@
                                 <p class="small text-muted mb-0">Display the numbered step-by-step process on the home page</p>
                             </div>
                             <div class="form-check form-switch mb-0">
+                                <input type="hidden" name="content[how_it_works][show_section]" value="0">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                        name="content[how_it_works][show_section]" value="1"
                                        {{ !empty($content['how_it_works']['show_section']) ? 'checked' : '' }}>
@@ -708,6 +762,7 @@
                                 <p class="small text-muted mb-0">Display the dark-themed benefit card grid on the home page</p>
                             </div>
                             <div class="form-check form-switch mb-0">
+                                <input type="hidden" name="content[why_invest][show_section]" value="0">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                        name="content[why_invest][show_section]" value="1"
                                        {{ !empty($content['why_invest']['show_section']) ? 'checked' : '' }}>
@@ -794,6 +849,7 @@
                                 <p class="small text-muted mb-0">Display an optional green-gradient action banner before the footer</p>
                             </div>
                             <div class="form-check form-switch mb-0">
+                                <input type="hidden" name="content[cta][show_section]" value="0">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                        name="content[cta][show_section]" value="1"
                                        {{ !empty($content['cta']['show_section']) ? 'checked' : '' }}>
@@ -869,21 +925,22 @@
             </div>{{-- end seo tab --}}
 
         </div>{{-- end tab-content --}}
+        @endif
 
         {{-- ── Sticky Save Bar ──────────────────────────────────────────── --}}
         <div class="sticky-save-bar">
             <div class="inner">
                 <div class="d-flex align-items-center gap-2 text-muted small">
                     <i class="fas fa-circle-info text-primary flex-shrink-0"></i>
-                    <span>All changes take effect <strong>immediately</strong> on the live home page after saving.</span>
+                    <span>All changes take effect <strong>immediately</strong> on the live {{ strtolower($currentTitle) }} after saving.</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('home') }}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-2">
+                    <a href="{{ $liveUrl }}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-2">
                         <i class="fas fa-eye"></i> <span class="d-none d-sm-inline">Preview</span>
                     </a>
                     <button type="submit" class="btn btn-primary btn-sm px-4 py-2 rounded-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2">
                         <i class="fas fa-save"></i>
-                        <span>Save Home Page</span>
+                        <span>Save {{ $currentTitle }}</span>
                     </button>
                 </div>
             </div>
@@ -899,12 +956,12 @@
             <div class="modal-header bg-danger text-white">
                 <div class="d-flex align-items-center gap-2">
                     <i class="fas fa-triangle-exclamation"></i>
-                    <h5 class="modal-title fs-6 fw-bold mb-0" id="resetModalLabel">Reset Home Page to Defaults?</h5>
+                    <h5 class="modal-title fs-6 fw-bold mb-0" id="resetModalLabel">Reset {{ $currentTitle }} to Defaults?</h5>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <p class="text-muted mb-0">This will overwrite <strong>all</strong> home page content — headings, badges, steps, cards, and CTA — with the factory default values. Your custom changes will be permanently lost.</p>
+                <p class="text-muted mb-0">This will overwrite <strong>all</strong> {{ strtolower($currentTitle) }} content with factory default values. Your custom changes will be permanently reset.</p>
             </div>
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3" data-bs-dismiss="modal">

@@ -237,48 +237,81 @@
             </div>
 
             <!-- Bottom Features Strip -->
-            <div class="row g-3 mt-4">
-                <div class="col-md-3">
-                    <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 gap-2 bg-primary-subtle text-primary"><i
-                                class="fas fa-calendar-alt fa-lg"></i></div>
-                        <div>
-                            <small class="text-muted d-block">{{ $post->time_label }}</small>
-                            <strong class="text-dark">{{ $post->expected_import_days }} Days</strong>
+            @php
+                $oppsPage = \App\Models\Page::getPage('opportunities');
+                $bfConfig = $oppsPage->content['bottom_features'] ?? \App\Models\Page::defaultOpportunitiesContent()['bottom_features'];
+                $showBottomFeatures = $bfConfig['show_section'] ?? true;
+                $rawFeatures = $bfConfig['items'] ?? [
+                    [
+                        'icon'  => 'fas fa-calendar-alt',
+                        'class' => 'bg-primary-subtle text-primary',
+                        'label' => '{time_label}',
+                        'value' => '{expected_import_days} Days',
+                    ],
+                    [
+                        'icon'  => 'fas fa-wallet',
+                        'class' => 'bg-success-subtle text-success',
+                        'label' => 'Profit Payment',
+                        'value' => '{msg_profit_payment}',
+                    ],
+                    [
+                        'icon'  => 'fas fa-arrows-rotate',
+                        'class' => 'bg-info-subtle text-info',
+                        'label' => 'Return Type',
+                        'value' => '{return_type}',
+                    ],
+                    [
+                        'icon'  => 'fas fa-user-shield',
+                        'class' => 'bg-warning-subtle text-warning',
+                        'label' => 'Investment Type',
+                        'value' => '{type}',
+                    ],
+                ];
+
+                $replacements = [
+                    '{time_label}'           => $post->time_label ?? 'Import Time',
+                    '{expected_import_days}' => $post->expected_import_days ?? 0,
+                    '{msg_profit_payment}'   => $post->msg_profit_payment ?? 'Weekly',
+                    '{return_type}'          => $post->return_type ?? 'Profit + Capital',
+                    '{type}'                 => $post->type ?? 'Import',
+                    '{profit_percentage}'    => $post->profit_percentage ?? 0,
+                    '{target_amount}'        => '৳' . number_format($post->target_amount ?? 0),
+                    '{unit_cost}'            => '৳' . number_format($post->unit_cost ?? 0),
+                    '{per_piece_profit}'     => '৳' . number_format($post->profit_per_unit ?? 0),
+                ];
+
+                $bottomFeatures = [];
+                foreach ($rawFeatures as $rf) {
+                    $lbl = str_replace(array_keys($replacements), array_values($replacements), $rf['label'] ?? '');
+                    $val = str_replace(array_keys($replacements), array_values($replacements), $rf['value'] ?? '');
+                    if (!empty($lbl) || !empty($val)) {
+                        $bottomFeatures[] = [
+                            'icon'  => $rf['icon'] ?? 'fas fa-circle-info',
+                            'class' => $rf['class'] ?? 'bg-primary-subtle text-primary',
+                            'label' => $lbl,
+                            'value' => $val,
+                        ];
+                    }
+                }
+            @endphp
+
+            @if($showBottomFeatures && !empty($bottomFeatures))
+                <div class="row g-3 mt-4">
+                    @foreach ($bottomFeatures as $feature)
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3 h-100">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center p-2 {{ $feature['class'] }}" style="width: 44px; height: 44px; flex-shrink: 0;">
+                                    <i class="{{ $feature['icon'] }} fa-lg"></i>
+                                </div>
+                                <div style="min-width: 0;">
+                                    <small class="text-muted d-block text-truncate">{{ $feature['label'] }}</small>
+                                    <strong class="text-dark d-block text-truncate">{{ $feature['value'] }}</strong>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
-                <div class="col-md-3">
-                    <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 gap-2 bg-success-subtle text-success"><i class="fas fa-wallet fa-lg"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Profit Payment</small>
-                            <strong class="text-dark">{{ $post->msg_profit_payment ?? 'Weekly' }}</strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 gap-2 bg-info-subtle text-info"><i class="fas fa-arrows-rotate fa-lg"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Return Type</small>
-                            <strong class="text-dark">Profit + Capital</strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
-                        <div class="rounded-3 gap-2 bg-warning-subtle text-warning"><i class="fas fa-user-shield fa-lg"></i>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Investment Type</small>
-                            <strong class="text-dark">{{ $post->type ?? 'Import' }}</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endif
         </div>
     </div>
 

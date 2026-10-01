@@ -13,6 +13,7 @@
             ['label' => 'Withdrawals', 'route' => 'withdrawals.index', 'match' => 'withdrawals.*',     'icon' => 'fas fa-money-bill-transfer'],
             ['label' => 'Clients',      'route' => 'users.index',                  'match' => 'users.*',                  'icon' => 'fas fa-users'],
             ['label' => 'Roles',        'route' => 'roles.index',                  'match' => 'roles.*',                  'icon' => 'fas fa-user-shield'],
+            ['label' => 'Messages',     'route' => 'contacts.index',          'match' => 'contacts.*',               'icon' => 'fas fa-envelope-open-text'],
             ['label' => 'Page Content', 'route' => 'settings.pages-content.index', 'match' => 'settings.pages-content.*', 'icon' => 'fas fa-file-waveform'],
             ['label' => 'Settings',     'route' => 'settings.index',               'match' => 'settings.index',           'icon' => 'fas fa-gear'],
         ];

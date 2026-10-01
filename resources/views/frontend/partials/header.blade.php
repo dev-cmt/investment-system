@@ -30,16 +30,16 @@
     <div class="collapse navbar-collapse d-none d-lg-flex" id="navContent">
       <ul class="navbar-nav mx-auto gap-2">
         <li class="nav-item">
-          <a class="nav-link {{ request()->routeIs('home') && !request()->has('page') ? 'active' : '' }}" id="nav-how" href="{{ route('home') }}#howItWorks">How It Works</a>
+          <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" id="nav-home" href="{{ route('home') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="nav-opp" href="{{ route('home') }}#opportunities">Active Opportunities</a>
+          <a class="nav-link {{ request()->routeIs('home') ? '' : '' }}" id="nav-opp" href="{{ route('page.opportunities') }}">Opportunities</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="nav-about" href="{{ route('home') }}#features">About Us</a>
+          <a class="nav-link {{ request()->routeIs('page.about') ? 'active' : '' }}" id="nav-about" href="{{ route('page.about') }}">About Us</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="nav-contact" href="#footer-contact">Contact</a>
+          <a class="nav-link {{ request()->routeIs('page.contact') ? 'active' : '' }}" id="nav-contact" href="{{ route('page.contact') }}">Contact</a>
         </li>
       </ul>
 
@@ -88,16 +88,16 @@
       <a href="{{ route('home') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-home me-2 text-success"></i> Home
       </a>
+      <a href="{{ route('page.opportunities') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
+        <i class="fas fa-fire me-2 text-success"></i> Active Opportunities
+      </a>
       <a href="{{ route('home') }}#howItWorks" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-circle-info me-2 text-success"></i> How It Works
       </a>
-      <a href="{{ route('home') }}#opportunities" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
-        <i class="fas fa-fire me-2 text-success"></i> Active Opportunities
-      </a>
-      <a href="{{ route('home') }}#features" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
+      <a href="{{ route('page.about') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-shield-check me-2 text-success"></i> About Us
       </a>
-      <a href="#footer-contact" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
+      <a href="{{ route('page.contact') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-envelope me-2 text-success"></i> Contact Us
       </a>
     </div>

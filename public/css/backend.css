@@ -25,11 +25,14 @@
     --hover-shadow: 0 10px 25px rgba(15, 23, 42, 0.07);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -55,7 +58,7 @@ a {
     display: flex;
     align-items: center;
     padding: 0 28px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .nav-brand {
@@ -100,7 +103,7 @@ a {
     margin: 0;
     padding: 0;
     overflow-x: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
 }
 
 .nav-links::-webkit-scrollbar {
@@ -201,7 +204,7 @@ a {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
     min-width: 220px;
     padding: 8px;
     z-index: 500;
@@ -214,8 +217,15 @@ a {
 }
 
 @keyframes ddIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dd-head {
@@ -326,7 +336,7 @@ a {
     height: 100%;
     padding: 20px 16px;
     overflow-y: auto;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-nav-list {
@@ -452,11 +462,25 @@ a {
     border-radius: 4px 0 0 4px;
 }
 
-.inv-stat-card.stat-teal::before { background: #0d9488; }
-.inv-stat-card.stat-emerald::before { background: #10b981; }
-.inv-stat-card.stat-amber::before { background: #f59e0b; }
-.inv-stat-card.stat-blue::before { background: #3b82f6; }
-.inv-stat-card.stat-purple::before { background: #8b5cf6; }
+.inv-stat-card.stat-teal::before {
+    background: #0d9488;
+}
+
+.inv-stat-card.stat-emerald::before {
+    background: #10b981;
+}
+
+.inv-stat-card.stat-amber::before {
+    background: #f59e0b;
+}
+
+.inv-stat-card.stat-blue::before {
+    background: #3b82f6;
+}
+
+.inv-stat-card.stat-purple::before {
+    background: #8b5cf6;
+}
 
 .inv-stat-icon,
 .mini-stat-icon {
@@ -686,12 +710,41 @@ a {
     font-weight: 600;
 }
 
-.pill-green { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-.pill-blue  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-.pill-amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-.pill-purple{ background: #faf5ff; color: #6d28d9; border: 1px solid #e9d5ff; }
-.pill-gray  { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-.pill-red   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.pill-green {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.pill-blue {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.pill-amber {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.pill-purple {
+    background: #faf5ff;
+    color: #6d28d9;
+    border: 1px solid #e9d5ff;
+}
+
+.pill-gray {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.pill-red {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
 
 /* ── ACTION BUTTONS ──────────────────────────── */
 .inv-action-btn {
@@ -742,14 +795,14 @@ a {
     border-radius: var(--radius-card);
     padding: 1.25rem;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     margin-bottom: 1rem;
 }
 
 .admin-data-card:hover,
 .inv-mobile-card:hover {
     border-color: rgba(26, 158, 79, 0.3);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .data-card-grid,
@@ -886,10 +939,13 @@ a {
 }
 
 @media (max-width: 992px) {
-    #app-nav { padding: 0 16px; }
+    #app-nav {
+        padding: 0 16px;
+    }
 }
 
 @media (max-width: 768px) {
+
     .inv-page-container,
     .db-page,
     .backend-page-container {

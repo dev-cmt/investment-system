@@ -10,7 +10,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\FrontendPageController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/cc', function () {
@@ -25,6 +27,14 @@ Route::get('/cc', function () {
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/opportunity/{id}', [HomeController::class, 'show'])->name('opportunity.show');
+
+// Public Static Pages
+Route::get('/about', [FrontendPageController::class, 'about'])->name('page.about');
+Route::get('/contact', [FrontendPageController::class, 'contact'])->name('page.contact');
+Route::post('/contact', [FrontendPageController::class, 'submitContact'])->name('page.contact.submit');
+Route::get('/privacy-policy', [FrontendPageController::class, 'privacy'])->name('page.privacy');
+Route::get('/terms-conditions', [FrontendPageController::class, 'terms'])->name('page.terms');
+Route::get('/opportunities', [FrontendPageController::class, 'opportunities'])->name('page.opportunities');
 
 // Protected Routes
 Route::middleware('auth')->group(function () {
@@ -53,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('payments', PaymentController::class)->except(['edit', 'update']);
     Route::resource('withdrawals', WithdrawalController::class);
     Route::resource('users', UserController::class);
+    Route::resource('contacts', ContactController::class);
 
     // Settings CRUD Routes
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.index');

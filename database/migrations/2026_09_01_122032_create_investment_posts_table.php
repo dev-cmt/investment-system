@@ -28,6 +28,7 @@ return new class extends Migration
             $table->decimal('target_amount', 15, 2); // Calculated: total_quantity * unit_cost
             $table->decimal('current_invested_amount', 15, 2)->default(0.00);
             $table->decimal('min_investment_amount', 12, 2)->default(1000.00);
+            $table->string('type')->default('Import');
 
             $table->enum('type', ['Import', 'Local', 'Manufacture'])->default('Import');
             $table->string('msg_profit_payment')->default('Weekly');
