@@ -43,6 +43,7 @@ class PageContentController extends Controller
             'slug' => 'required|string',
             'hero_image' => 'nullable|image|mimes:jpeg,jpg,png,webp,svg|max:4096',
             'story_image' => 'nullable|image|mimes:jpeg,jpg,png,webp,svg|max:4096',
+            'privacy_policy_pdf' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $inputContent = $request->input('content', []);
@@ -63,6 +64,20 @@ class PageContentController extends Controller
             $inputContent['story']['image'] = $newImage;
         } elseif (!isset($inputContent['story']['image']) && isset($existingContent['story']['image'])) {
             $inputContent['story']['image'] = $existingContent['story']['image'];
+        }
+
+        // Process Privacy Policy PDF Upload (Opportunities details page)
+        if ($request->hasFile('privacy_policy_pdf')) {
+            $oldPdf = $existingContent['bottom_features']['privacy_pdf'] ?? null;
+            $newPdf = ImageHelper::uploadImage($request->file('privacy_policy_pdf'), 'uploads/documents', $oldPdf);
+            $inputContent['bottom_features']['privacy_pdf'] = $newPdf;
+        } elseif ($request->boolean('remove_privacy_pdf')) {
+            if (!empty($existingContent['bottom_features']['privacy_pdf'])) {
+                ImageHelper::deleteImage($existingContent['bottom_features']['privacy_pdf']);
+            }
+            $inputContent['bottom_features']['privacy_pdf'] = null;
+        } elseif (!isset($inputContent['bottom_features']['privacy_pdf']) && isset($existingContent['bottom_features']['privacy_pdf'])) {
+            $inputContent['bottom_features']['privacy_pdf'] = $existingContent['bottom_features']['privacy_pdf'];
         }
 
         // Checkbox toggles based on slug

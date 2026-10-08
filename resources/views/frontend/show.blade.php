@@ -241,6 +241,10 @@
                 $oppsPage = \App\Models\Page::getPage('opportunities');
                 $bfConfig = $oppsPage->content['bottom_features'] ?? \App\Models\Page::defaultOpportunitiesContent()['bottom_features'];
                 $showBottomFeatures = $bfConfig['show_section'] ?? true;
+                $privacyPdfUrl = !empty($bfConfig['privacy_pdf']) ? asset($bfConfig['privacy_pdf']) : route('page.privacy');
+                $privacyLabel  = $bfConfig['privacy_label'] ?? 'Privacy Policy';
+                $privacyBtn    = $bfConfig['privacy_btn'] ?? 'Download PDF';
+
                 $rawFeatures = $bfConfig['items'] ?? [
                     [
                         'icon'  => 'fas fa-calendar-alt',
@@ -295,21 +299,36 @@
                 }
             @endphp
 
-            @if($showBottomFeatures && !empty($bottomFeatures))
-                <div class="row g-3 mt-4">
+            @if($showBottomFeatures)
+                <div class="row g-3 mt-4 align-items-stretch">
                     @foreach ($bottomFeatures as $feature)
-                        <div class="col-6 col-md-3">
-                            <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-3 h-100">
-                                <div class="rounded-3 d-flex align-items-center justify-content-center p-2 {{ $feature['class'] }}" style="width: 44px; height: 44px; flex-shrink: 0;">
+                        <div class="col-lg col-md-4 col-sm-6 col-6">
+                            <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-2 h-100 border">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center p-2 {{ $feature['class'] }}" style="width: 42px; height: 42px; flex-shrink: 0;">
                                     <i class="{{ $feature['icon'] }} fa-lg"></i>
                                 </div>
                                 <div style="min-width: 0;">
-                                    <small class="text-muted d-block text-truncate">{{ $feature['label'] }}</small>
-                                    <strong class="text-dark d-block text-truncate">{{ $feature['value'] }}</strong>
+                                    <small class="text-muted d-block text-truncate" style="font-size: 0.78rem;">{{ $feature['label'] }}</small>
+                                    <strong class="text-dark d-block text-truncate" style="font-size: 0.88rem;">{{ $feature['value'] }}</strong>
                                 </div>
                             </div>
                         </div>
                     @endforeach
+
+                    {{-- 5th Card: Privacy Policy PDF Download --}}
+                    <div class="col-lg col-md-4 col-sm-6 col-6">
+                        <div class="p-3 bg-white rounded-3 shadow-sm d-flex align-items-center gap-2 h-100 border border-danger-subtle">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center p-2 bg-danger-subtle text-danger" style="width: 42px; height: 42px; flex-shrink: 0;">
+                                <i class="fas fa-file-pdf fa-lg"></i>
+                            </div>
+                            <div style="min-width: 0;" class="flex-grow-1">
+                                <small class="text-muted d-block text-truncate" style="font-size: 0.78rem;">{{ $privacyLabel }}</small>
+                                <a href="{{ $privacyPdfUrl }}" target="_blank" {{ !empty($bfConfig['privacy_pdf']) ? 'download' : '' }} class="btn btn-danger btn-sm py-1 px-2.5 fw-semibold d-inline-flex align-items-center gap-1 mt-0.5 rounded-pill shadow-sm" style="font-size: 0.73rem; text-decoration: none;">
+                                    <i class="fas fa-download"></i> {{ $privacyBtn }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>

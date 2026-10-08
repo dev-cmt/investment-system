@@ -227,10 +227,18 @@
                       <option value="">Select a subject…</option>
                       @php
                         $subjects = $form['subjects'] ?? ['Investment Inquiry', 'Withdrawal Help', 'Account Support', 'Partnership', 'Other'];
-                      @endphp
-                      @foreach($subjects as $subj)
-                        <option value="{{ $subj }}" {{ old('subject') == $subj ? 'selected' : '' }}>{{ $subj }}</option>
-                      @endforeach
+
+                        // If it's a JSON string, decode it
+                        if (is_string($subjects)) {
+                            $subjects = json_decode($subjects, true) ?? explode(',', $subjects);
+                        }
+                    @endphp
+
+                    @foreach((array) $subjects as $subj)
+                        <option value="{{ trim($subj) }}" {{ old('subject') == $subj ? 'selected' : '' }}>
+                            {{ trim($subj) }}
+                        </option>
+                    @endforeach
                     </select>
                     @error('subject')<div style="color:red;font-size:0.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                   </div>

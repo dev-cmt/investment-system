@@ -32,9 +32,11 @@
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" id="nav-home" href="{{ route('home') }}">Home</a>
         </li>
+        @auth
         <li class="nav-item">
-          <a class="nav-link {{ request()->routeIs('home') ? '' : '' }}" id="nav-opp" href="{{ route('page.opportunities') }}">Opportunities</a>
+          <a class="nav-link {{ request()->routeIs('page.opportunities') ? 'active' : '' }}" id="nav-opp" href="{{ route('page.opportunities') }}">Opportunities</a>
         </li>
+        @endauth
         <li class="nav-item">
           <a class="nav-link {{ request()->routeIs('page.about') ? 'active' : '' }}" id="nav-about" href="{{ route('page.about') }}">About Us</a>
         </li>
@@ -88,9 +90,11 @@
       <a href="{{ route('home') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-home me-2 text-success"></i> Home
       </a>
+      @auth
       <a href="{{ route('page.opportunities') }}" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-fire me-2 text-success"></i> Active Opportunities
       </a>
+      @endauth
       <a href="{{ route('home') }}#howItWorks" class="nav-link py-2.5 px-3 rounded-3 text-dark fw-semibold hover-bg-light">
         <i class="fas fa-circle-info me-2 text-success"></i> How It Works
       </a>

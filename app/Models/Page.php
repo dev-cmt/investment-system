@@ -586,7 +586,10 @@ class Page extends Model
                 'btn2_text'  => 'Sign In',
             ],
             'bottom_features' => [
-                'show_section' => true,
+                'show_section'  => true,
+                'privacy_pdf'   => null,
+                'privacy_label' => 'Privacy Policy',
+                'privacy_btn'   => 'Download PDF',
                 'items' => [
                     [
                         'icon'  => 'fas fa-calendar-alt',

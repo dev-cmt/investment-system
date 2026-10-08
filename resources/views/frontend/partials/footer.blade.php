@@ -87,8 +87,10 @@
                     <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right"></i> Home</a></li>
                     <li><a href="{{ route('home') }}#howItWorks"><i class="fas fa-chevron-right"></i> How It Works</a>
                     </li>
+                    @auth
                     <li><a href="{{ route('page.opportunities') }}"><i class="fas fa-chevron-right"></i> Active
                             Opportunities</a></li>
+                    @endauth
                     <li><a href="{{ route('page.about') }}"><i class="fas fa-chevron-right"></i> About Us</a></li>
                     <li><a href="{{ route('page.contact') }}"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
                 </ul>
@@ -146,34 +148,10 @@
 
         </div><!-- /footer-grid -->
 
-        <!-- ── Trust Badges Bar ── -->
-        <div class="footer-trust-bar">
-            <div class="footer-trust-item">
-                <i class="fas fa-shield-halved"></i>
-                <span>Secure Investments</span>
-            </div>
-            <div class="footer-trust-sep"></div>
-            <div class="footer-trust-item">
-                <i class="fas fa-rotate"></i>
-                <span>Weekly Payouts</span>
-            </div>
-            <div class="footer-trust-sep"></div>
-            <div class="footer-trust-item">
-                <i class="fas fa-users"></i>
-                <span>Verified Investors</span>
-            </div>
-            <div class="footer-trust-sep"></div>
-            <div class="footer-trust-item">
-                <i class="fas fa-chart-line"></i>
-                <span>Transparent Returns</span>
-            </div>
-        </div>
-
         <!-- ── Bottom Bar ── -->
         <div class="footer-bottom-bar">
             <p class="footer-copyright">
                 &copy; {{ date('Y') }} <strong>{{ $companyName }}</strong>. All rights reserved.
-                Built with <i class="fas fa-heart footer-heart"></i> for smart investors.
             </p>
             <div class="footer-bottom-links">
                 <a href="{{ route('page.privacy') }}">Privacy Policy</a>

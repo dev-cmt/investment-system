@@ -199,21 +199,13 @@
                                 </form>
                             @endif
 
-                            @if($payment->status !== 'approved')
-                                <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="w-100" onsubmit="return confirm('Are you sure you want to delete this payment record?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-3 fw-semibold py-1.5">
-                                        <i class="fas fa-trash me-1"></i> Delete
-                                    </button>
-                                </form>
-                            @else
-                                <div class="w-100 text-center py-1">
-                                    <span class="badge bg-light text-muted border px-2.5 py-1 extra-small">
-                                        <i class="fas fa-lock me-1"></i> Approved (Locked)
-                                    </span>
-                                </div>
-                            @endif
+                            <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="w-100" onsubmit="return confirm('Are you sure you want to delete this payment record?{{ $payment->status === 'approved' ? ' If deleted, the approved invested amount will be rolled back.' : '' }}');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-3 fw-semibold py-1.5" title="Delete Payment">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </button>
+                            </form>
                         </div>
                     @endif
                 </div>
@@ -335,19 +327,13 @@
                                                 </form>
                                             @endif
 
-                                            @if($payment->status !== 'approved')
-                                                <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this payment record?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger inv-action-btn" title="Delete Payment">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <span class="badge bg-light text-muted border px-2 py-1 extra-small" title="Approved payments are locked and cannot be deleted">
-                                                    <i class="fas fa-lock me-1"></i> Locked
-                                                </span>
-                                            @endif
+                                            <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this payment record?{{ $payment->status === 'approved' ? ' If deleted, the approved invested amount will be rolled back.' : '' }}');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger inv-action-btn" title="Delete Payment">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     @else
                                         <span class="text-muted extra-small">View only</span>

@@ -77,7 +77,7 @@
         @endphp
         @for($bi = 0; $bi < 4; $bi++)
             <div class="col-md-6">
-                <div class="p-3 border rounded-3 bg-light">
+                <div class="p-3 border rounded-3 bg-light h-100">
                     <div class="fw-bold text-dark small mb-2"><i class="fas fa-tag text-primary me-1"></i> Feature Card {{ $bi + 1 }}</div>
                     <div class="row g-2">
                         <div class="col-6">
@@ -107,5 +107,46 @@
                 </div>
             </div>
         @endfor
+
+        {{-- Feature Card 5: Privacy Policy & PDF Upload --}}
+        @php
+            $privacyPdf = $content['bottom_features']['privacy_pdf'] ?? null;
+        @endphp
+        <div class="col-12">
+            <div class="p-3 border rounded-3 bg-white shadow-sm border-danger-subtle">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <div class="fw-bold text-danger small">
+                        <i class="fas fa-file-pdf me-1.5"></i> Feature Card 5: Privacy Policy &amp; PDF Download
+                    </div>
+                    @if($privacyPdf)
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ asset($privacyPdf) }}" target="_blank" class="btn btn-xs btn-outline-danger py-1 px-2.5 rounded-pill fw-semibold" style="font-size:0.75rem;">
+                                <i class="fas fa-external-link-alt me-1"></i> View Current PDF
+                            </a>
+                            <div class="form-check form-check-inline mb-0 ms-2">
+                                <input class="form-check-input" type="checkbox" name="remove_privacy_pdf" id="remove_privacy_pdf" value="1">
+                                <label class="form-check-label text-danger extra-small fw-semibold" for="remove_privacy_pdf">Remove PDF</label>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="fld-label">Card Label</label>
+                        <input type="text" name="content[bottom_features][privacy_label]" class="form-control form-control-sm" placeholder="Privacy Policy" value="{{ $content['bottom_features']['privacy_label'] ?? 'Privacy Policy' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fld-label">Button Text</label>
+                        <input type="text" name="content[bottom_features][privacy_btn]" class="form-control form-control-sm" placeholder="Download PDF" value="{{ $content['bottom_features']['privacy_btn'] ?? 'Download PDF' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fld-label">Upload Policy PDF (.pdf)</label>
+                        <input type="file" name="privacy_policy_pdf" class="form-control form-control-sm" accept=".pdf">
+                        <small class="text-muted extra-small d-block mt-1">Upload a PDF file (Max: 10MB). If empty, links to online Privacy Policy.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

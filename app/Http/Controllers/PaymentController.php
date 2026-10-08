@@ -215,18 +215,18 @@ class PaymentController extends Controller
 
     /**
      * Remove the specified payment from storage.
-     * Approved payment records cannot be deleted.
+     * If an approved payment is deleted, the investment's paid/due amounts
+     * and the post's current_invested_amount are rolled back.
      */
     public function destroy(Payment $payment): RedirectResponse
     {
         $user = Auth::user();
         abort_unless($user->hasRole(['admin', 'superadmin']) || $user->can('view all payments'), 403);
 
-        if ($payment->status === 'approved') {
-            return redirect()->route('payments.index')->with('error', 'Approved payment records cannot be deleted.');
-        }
-
-        $inv = $payment->investment;
+        $wasApproved = ($payment->status === 'approved');
+        $paidAmount  = (float) $payment->paid_amount;
+        $inv         = $payment->investment;
+        $post        = $payment->post ?: ($inv ? $inv->post : null);
 
         if ($payment->slip) {
             ImageHelper::deleteImage($payment->slip);
@@ -238,6 +238,12 @@ class PaymentController extends Controller
             $inv->recalculatePaidAndDue();
         }
 
-        return redirect()->route('payments.index')->with('success', 'Payment record deleted successfully.');
+        if ($wasApproved && $post && $paidAmount > 0) {
+            $currentInvested = (float) $post->current_invested_amount;
+            $newInvested     = max(0, $currentInvested - $paidAmount);
+            $post->update(['current_invested_amount' => $newInvested]);
+        }
+
+        return redirect()->route('payments.index')->with('success', 'Payment record deleted and invested amount rolled back successfully.');
     }
 }
