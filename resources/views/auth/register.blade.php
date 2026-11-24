@@ -1,7 +1,6 @@
 <x-auth-layout>
     <div class="text-center mb-3">
-        <h5 class="fw-bold text-white mb-1" style="font-size: 1.15rem;">Join InvestHub</h5>
-        <p class="text-secondary small mb-0" style="font-size: 0.78rem;">Create your investor account &amp; start earning weekly profit</p>
+        <p class="text-secondary small mb-0" style="font-size: 0.78rem;">Create your investor account &amp; start earning profit</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">
@@ -9,7 +8,7 @@
 
         <!-- Full Name -->
         <div class="mb-2">
-            <label for="name" class="form-label-custom">Full Name</label>
+            <label for="name" class="form-label-custom">Full Name <span class="text-danger">*</span></label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-user"></i></span>
                 <input id="name" class="form-control form-control-custom" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="John Doe" />
@@ -19,7 +18,7 @@
 
         <!-- Email Address -->
         <div class="mb-2">
-            <label for="email" class="form-label-custom">Email Address</label>
+            <label for="email" class="form-label-custom">Email Address <span class="text-danger">*</span></label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-envelope"></i></span>
                 <input id="email" class="form-control form-control-custom" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="name@example.com" />
@@ -27,9 +26,19 @@
             <x-input-error :messages="$errors->get('email')" class="mt-1 text-danger small" />
         </div>
 
+        <!-- Phone Number -->
+        <div class="mb-2">
+            <label for="phone" class="form-label-custom">Phone Number <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text input-group-text-custom"><i class="fas fa-phone"></i></span>
+                <input id="phone" class="form-control form-control-custom" type="tel" name="phone" value="{{ old('phone') }}" required autocomplete="tel" placeholder="+8801XXXXXXXXX" />
+            </div>
+            <x-input-error :messages="$errors->get('phone')" class="mt-1 text-danger small" />
+        </div>
+
         <!-- Password -->
         <div class="mb-2">
-            <label for="password" class="form-label-custom">Password</label>
+            <label for="password" class="form-label-custom">Password <span class="text-danger">*</span></label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-lock"></i></span>
                 <input id="password" class="form-control form-control-custom" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
@@ -42,7 +51,7 @@
 
         <!-- Confirm Password -->
         <div class="mb-3">
-            <label for="password_confirmation" class="form-label-custom">Confirm Password</label>
+            <label for="password_confirmation" class="form-label-custom">Confirm Password <span class="text-danger">*</span></label>
             <div class="input-group">
                 <span class="input-group-text input-group-text-custom"><i class="fas fa-shield-halved"></i></span>
                 <input id="password_confirmation" class="form-control form-control-custom" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" />
